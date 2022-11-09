@@ -1,0 +1,15 @@
+
+.idea/
+
+.DS_Store
+
+go-pano.output
+static/img/*
+log/*
+dist/static/img/*
+dist/log/*
+dist/mysql
+docker-compose-prod.yml
+config-prod.yml
+
+classifier-6.pt
