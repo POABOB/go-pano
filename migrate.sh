@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 sm=$(which "sql-migrate")
 if [ -z sql-migrate ]; then
