@@ -1,0 +1,33 @@
+version: "3"
+services:
+  pano-python:
+    build: ./dist/python
+    container_name: pano-python
+    volumes:
+      - ./dist/static:/app/go/static
+    ports:
+      - 5000:5000
+  pano-go:
+    build: .
+    container_name: pano-go
+    volumes:
+      - ./dist/python:/python
+      - ./dist/log:/app/go/log
+      - ./dist/static:/app/go/static
+    depends_on:
+      - mysql
+    ports:
+      - 80:80
+  mysql:
+    image: cap1573/mysql:5.6
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: "pano"
+      MYSQL_USER: "pano"
+      MYSQL_PASSWORD: "ppaannoo"
+      MYSQL_RANDOM_ROOT_PASSWORD: true
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./dist/mysql:/var/lib/mysql

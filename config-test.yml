@@ -1,0 +1,28 @@
+server:
+  version: v0.1
+  addr: :80
+  mode: debug
+  static_dir: ./static
+  # view_dir: ./view
+  # upload_dir: ./storage
+  max_multipart_memory: 50
+
+python:
+  dev_host: 127.0.0.1
+  prod_host: pano-python
+
+database-in-docker:
+  dialect: mysql
+  datasource: pano:ppaannoo@tcp(mysql:3306)/pano?charset=utf8mb4&timeout=10s&parseTime=True
+  dir: migrations
+  table: migrations
+  max_idle_conns: 2
+  max_open_conns: 16
+
+database:
+  dialect: mysql
+  datasource: pano:ppaannoo@tcp(localhost:3306)/pano?charset=utf8mb4&timeout=10s&parseTime=True
+  dir: migrations
+  table: migrations
+  max_idle_conns: 2
+  max_open_conns: 16

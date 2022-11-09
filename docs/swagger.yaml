@@ -1,0 +1,56 @@
+definitions:
+  utils.IH200:
+    properties:
+      msg:
+        default: 成功
+        type: string
+      predict: {}
+      status:
+        default: true
+        type: boolean
+    type: object
+  utils.IH500:
+    properties:
+      msg:
+        default: desc...
+        type: string
+      status:
+        default: false
+        type: boolean
+    type: object
+host: localhost
+info:
+  contact: {}
+  description: Swagger API.
+  title: Gin Go Pano
+  version: "1.0"
+paths:
+  /predict:
+    post:
+      operationId: "1"
+      parameters:
+      - description: 請使用診所ID
+        in: formData
+        name: clinic_id
+        required: true
+        type: integer
+      - description: 請選擇牙齒的X光圖
+        in: formData
+        name: nhicode
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.IH200'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.IH500'
+      summary: 上傳圖片和AI辨識
+      tags:
+      - predict
+swagger: "2.0"

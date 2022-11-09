@@ -1,12 +1,5 @@
 # Gin-Framework
 
-## Generate swag document
-
-All comments were written in router/router.go, so you need to find the path.
-
-```
-swag init -g ./router/router.go -o ./docs
-```
 
 ## Dev Configuration
 
@@ -85,7 +78,7 @@ python:
 
 database-in-docker:
   dialect: mysql
-  datasource: pano:ppaannoo@tcp(mysql:3306)/pano?charset=utf8mb4&timeout=10s&parseTime=True
+  datasource: <user>:<password>@tcp(mysql:3306)/pano?charset=utf8mb4&timeout=10s&parseTime=True
   dir: migrations
   table: migrations
   max_idle_conns: 2
@@ -150,4 +143,12 @@ docker-compose -f docker-compose-prod.yml up
 
 ```
 ./migrate.sh up
+```
+
+## Generate swag document
+
+All comments were written in router/router.go, so you need to find the path.
+
+```
+swag init -g ./router/router.go -o ./docs
 ```
