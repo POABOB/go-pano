@@ -12,6 +12,10 @@ import (
 	"gorm.io/gorm/logger"
 )
 
+type IDBInstance interface {
+	DB() *gorm.DB
+}
+
 // DBInstance is a singleton DB instance
 type DBInstance struct {
 	//

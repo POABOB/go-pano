@@ -18,9 +18,7 @@ func NewRouter(app *gin.Engine) {
 	predictService := new(service.PredictService)
 	predict := app.Group("/predict")
 	{
-
-		// predict.POST("/exec", predictService.ImageUploadExec)
-		predict.POST("", predictService.ImageUploadHTTP)
+		predict.POST("/grpc", predictService.ImageUpload)
 	}
 
 	url := ginSwagger.URL("/swagger/doc.json") // The url pointing to API definition

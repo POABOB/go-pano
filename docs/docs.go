@@ -16,7 +16,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/predict": {
+        "/predict/grpc": {
             "post": {
                 "produces": [
                     "application/json"
@@ -24,7 +24,49 @@ const docTemplate = `{
                 "tags": [
                     "predict"
                 ],
-                "summary": "上傳圖片和AI辨識",
+                "summary": "GRPC上傳圖片和AI辨識",
+                "operationId": "2",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "請使用診所ID",
+                        "name": "clinic_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "請選擇牙齒的X光圖",
+                        "name": "nhicode",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.IH200"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.IH500"
+                        }
+                    }
+                }
+            }
+        },
+        "/predict/http": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "predict"
+                ],
+                "summary": "HTTP上傳圖片和AI辨識",
                 "operationId": "1",
                 "parameters": [
                     {

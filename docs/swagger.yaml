@@ -25,7 +25,35 @@ info:
   title: Gin Go Pano
   version: "1.0"
 paths:
-  /predict:
+  /predict/grpc:
+    post:
+      operationId: "2"
+      parameters:
+      - description: 請使用診所ID
+        in: formData
+        name: clinic_id
+        required: true
+        type: integer
+      - description: 請選擇牙齒的X光圖
+        in: formData
+        name: nhicode
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.IH200'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.IH500'
+      summary: GRPC上傳圖片和AI辨識
+      tags:
+      - predict
+  /predict/http:
     post:
       operationId: "1"
       parameters:
@@ -50,7 +78,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/utils.IH500'
-      summary: 上傳圖片和AI辨識
+      summary: HTTP上傳圖片和AI辨識
       tags:
       - predict
 swagger: "2.0"

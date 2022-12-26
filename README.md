@@ -152,3 +152,25 @@ All comments were written in router/router.go, so you need to find the path.
 ```
 swag init -g ./router/router.go -o ./docs
 ```
+
+## Use Protocol Buffers
+
+Generate all pb files.
+
+```
+protoc ./protos/*/*.proto  --go_out=plugins=grpc:. --go_opt=paths=source_relative
+```
+
+## TODO
+
+- Write down the real process
+- TEST FUNC
+- DB Schema migrate
+- User CRUD API
+- Clinic Manage API
+  - CRUD Clinic
+  - Token generate
+  - quota limit
+- Statistic API
+  - services used per month every clinic
+  - services score list
