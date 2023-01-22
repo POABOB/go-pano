@@ -19,19 +19,19 @@ type IPredictRepository interface {
 
 // new Class()
 func NewPredictRepository(db utils.IDBInstance) IPredictRepository {
-	return &PredictRepository{mysqlDB: db}
+	return &PredictRepository{mysql: db}
 }
 
 // class
 type PredictRepository struct {
-	mysqlDB utils.IDBInstance
+	mysql utils.IDBInstance
 }
 
 // 有(p *PredictRepository)都是PredictRepository的public函數
 // GetFirstByID gets the user by his ID
 func (ctrl *PredictRepository) GetFirstByIDAndFileName(clinicId int, fileName string) (*model.Predict, error) {
 	predictModel := &model.Predict{}
-	err := ctrl.mysqlDB.DB().Where("clinic_id=?", clinicId).Where("filename=?", fileName).First(predictModel).Error
+	err := ctrl.mysql.DB().Where("clinic_id=?", clinicId).Where("filename=?", fileName).First(predictModel).Error
 
 	// First找不到會報錯
 	if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -49,12 +49,12 @@ func (ctrl *PredictRepository) GetFirstByIDAndFileName(clinicId int, fileName st
 // Insert a Predict
 func (ctrl *PredictRepository) Create(clinic_id int, fileName string, predict string) error {
 	predictModel := &model.Predict{
-		ClinicId: clinic_id,
-		Filename: fileName,
-		Predict:  predict,
+		ClinicId:      clinic_id,
+		Filename:      fileName,
+		PredictString: predict,
 	}
 
-	db := ctrl.mysqlDB.DB().Create(predictModel)
+	db := ctrl.mysql.DB().Create(predictModel)
 
 	// 處理不同ERR種類
 	if db.Error != nil {

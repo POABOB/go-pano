@@ -10,6 +10,8 @@ import (
 
 func main() {
 
+	config.LoadConfig()
+
 	// 顯示監聽地址
 	addr := flag.String("addr", config.Server.Addr, "Address to listen and serve")
 	flag.Parse()

@@ -3,13 +3,13 @@ package config
 import (
 	"io/ioutil"
 	"log"
-	"os"
 
 	yaml "gopkg.in/yaml.v2"
 )
 
 // 配置文件，Mysql、Mode...等設定
-var ConfigFile = "./config.yml"
+var ConfigFile string = "./config.yml"
+var TestConfigFile string = "../../../config-test.yml"
 
 // GlobalConfig is the global config
 type GlobalConfig struct {
@@ -40,6 +40,7 @@ type DatabaseConfig struct {
 type PythonConfig struct {
 	DevHost  string `yaml:"dev_host"`
 	ProdHost string `yaml:"prod_host"`
+	TestHost string `yaml:"test_host"`
 }
 
 // global configs
@@ -51,7 +52,7 @@ var (
 )
 
 // Load config from file
-func Load(file string) (GlobalConfig, error) {
+func load(file string) (GlobalConfig, error) {
 	data, err := ioutil.ReadFile(file)
 	if err != nil {
 		log.Printf("%v", err)
@@ -68,18 +69,29 @@ func Load(file string) (GlobalConfig, error) {
 	if Global.Server.Mode == "prod" {
 		Database = Global.DatabaseInDocker
 		PythonHost = Global.Python.ProdHost
-	} else {
+	} else if Global.Server.Mode == "debug" {
 		Database = Global.Database
 		PythonHost = Global.Python.DevHost
+	} else {
+		Database = Global.Database
+		PythonHost = Global.Python.TestHost
 	}
 
 	return Global, nil
 }
 
-// loads configs
-func init() {
-	if os.Getenv("config") != "" {
-		ConfigFile = os.Getenv("config")
-	}
-	Load(ConfigFile)
+func LoadConfigTest() {
+	load(TestConfigFile)
 }
+
+func LoadConfig() {
+	load(ConfigFile)
+}
+
+// // loads configs
+// func init() {
+// 	if os.Getenv("config") != "" {
+// 		ConfigFile = os.Getenv("config")
+// 	}
+// 	Load(ConfigFile)
+// }

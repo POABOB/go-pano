@@ -2,9 +2,9 @@ package utils
 
 // 建立 200 500 的 Interface
 type IH200 struct {
-	Status  bool        `default:"true" json:"status"`
-	Msg     string      `default:"成功" json:"msg"`
-	Predict interface{} `default:"" json:"predict"`
+	Status bool        `default:"true" json:"status"`
+	Msg    string      `default:"成功" json:"msg"`
+	Data   interface{} `default:"" json:"data"`
 }
 
 type IH500 struct {
@@ -14,17 +14,17 @@ type IH500 struct {
 
 // Response 的格式
 type Response struct {
-	Status  bool        `default:"true" json:"status"`
-	Msg     string      `default:"成功" json:"msg"`
-	Predict interface{} `default:"" json:"predict"`
+	Status bool        `default:"true" json:"status"`
+	Msg    string      `default:"成功" json:"msg"`
+	Data   interface{} `default:"" json:"data"`
 }
 
 // 返回200
 func H200(data interface{}, msg string) Response {
 	return Response{
-		Status:  true,
-		Msg:     msg,
-		Predict: data,
+		Status: true,
+		Msg:    msg,
+		Data:   data,
 	}
 }
 

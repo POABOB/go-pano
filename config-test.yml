@@ -1,14 +1,15 @@
 server:
   version: v0.1
   addr: :80
-  mode: debug
-  static_dir: ./static
+  mode: test
+  static_dir: ../../../static
   # view_dir: ./view
   # upload_dir: ./storage
   max_multipart_memory: 50
 
 python:
   dev_host: 127.0.0.1
+  test_host: 127.0.0.1
   prod_host: pano-python
 
 database-in-docker:

@@ -33,11 +33,13 @@ def Start():
     4.齲齒: %(caries)s
     5.曾經根管治療: %(endo)s"""
 
-    predict = {}
+    predict = []
+    index = 0
     anomaly_list = ['R.R', 'caries', 'crown', 'endo', 'post', 'filling', 'Imp', 'embedded', 'impacted', 'missing']
     for filename, teeth in tooth_anomaly_dict.items():
         filename = f'{filename}.jpg'
-        predict[filename] = {}
+        predict[index] = {}
+        predict[index]["filename"] = filename
 
         teeth_anomalies_dict = {anomaly: [] for anomaly in anomaly_list}
         for tooth_number, anomalies in teeth.items():
@@ -50,8 +52,9 @@ def Start():
                 anomaly] else 'no finding' for
             anomaly in text_anomalies_list}
 
-        predict[filename]['text'] = text % text_dict
-        predict[filename]['data'] = teeth_anomalies_dict
+        predict[index]['text'] = text % text_dict
+        predict[index]['data'] = teeth_anomalies_dict
+        index++
 
 
     # 假資料
@@ -59,8 +62,10 @@ def Start():
     result = {
         "isSuccessful": True,
         "msg": "成功",
-        "predict": predict
+        # 把json轉成STR
+        "predict": json.dumps(predict)
     }
+
 
     return json.dumps(result, ensure_ascii=False)
     # except Exception as e:

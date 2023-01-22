@@ -74,6 +74,7 @@ server:
 
 python:
   dev_host: 127.0.0.1
+  test_host: 127.0.0.1
   prod_host: pano-python
 
 database-in-docker:
@@ -160,6 +161,16 @@ Generate all pb files.
 ```
 protoc ./protos/*/*.proto  --go_out=plugins=grpc:. --go_opt=paths=source_relative
 ```
+
+## Problems
+
+1. If there is a error when you migrated.
+```
+poabob@gengyingxiangdeMacBook-Pro go-pano % ./migrate.sh up    
+/Users/poabob/go/bin/sql-migrate up -config=config.yml -env=database
+Migration failed: Error 1146: Table 'pano.clinic' doesn't exist handling 20230119061136-Add-New-Tables.sql
+```
+> Just restart the container of mysql. It will be fixed.
 
 ## TODO
 

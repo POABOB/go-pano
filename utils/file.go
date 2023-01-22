@@ -3,14 +3,46 @@ package utils
 import (
 	"fmt"
 	"mime/multipart"
+	"os"
 	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
+// 預設服務就是Predict
+type IFileUtils interface {
+	PathExist(string) error
+	SaveWithGo(*gin.Context, string, []*multipart.FileHeader) error
+}
+
+// 實例化
+func NewFileUtils() IFileUtils {
+	return &FileUtils{}
+}
+
+// class
+type FileUtils struct {
+}
+
+// 判斷資料夾是否存在，不存在就新增
+func (u *FileUtils) PathExist(path string) error {
+	if _, err := os.Stat(path); err != nil {
+		if !os.IsExist(err) {
+			// 沒有資料夾，那就建立
+			if err := os.MkdirAll(path, os.ModePerm); err != nil {
+				return err
+			}
+		} else {
+			// 如果是其他錯誤
+			return err
+		}
+	}
+	return nil
+}
+
 // 使用協程上傳
-func SaveWithGo(ctx *gin.Context, base_dir string, files []*multipart.FileHeader) error {
+func (u *FileUtils) SaveWithGo(ctx *gin.Context, base_dir string, files []*multipart.FileHeader) error {
 	startTime := time.Now().UnixMicro()
 	// 處理檔案的channel
 	working := make(chan *multipart.FileHeader)
@@ -24,7 +56,7 @@ func SaveWithGo(ctx *gin.Context, base_dir string, files []*multipart.FileHeader
 	for i := 0; i < 5; i++ {
 		wg.Add(1)
 		// worker 處理檔案
-		go worker(&wg, working, failures, ctx, base_dir)
+		go u.worker(&wg, working, failures, ctx, base_dir)
 	}
 
 	// goroutine 將單個file傳給chan，讓協程自動執行
@@ -48,7 +80,7 @@ func SaveWithGo(ctx *gin.Context, base_dir string, files []*multipart.FileHeader
 }
 
 // worker上傳檔案，並記錄錯誤
-func worker(wg *sync.WaitGroup, working <-chan *multipart.FileHeader, failures chan<- error, ctx *gin.Context, base_dir string) {
+func (u *FileUtils) worker(wg *sync.WaitGroup, working <-chan *multipart.FileHeader, failures chan<- error, ctx *gin.Context, base_dir string) {
 	// 最後執行 Done
 	defer wg.Done()
 	for f := range working {

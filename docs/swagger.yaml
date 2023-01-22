@@ -1,10 +1,111 @@
 definitions:
+  model.Predict:
+    properties:
+      clinic_id:
+        type: integer
+      created_at:
+        type: string
+      filename:
+        type: string
+      id:
+        type: integer
+      predict:
+        description: JSON要顯示，但是不要存入DB
+        items:
+          $ref: '#/definitions/model.PredictDetail'
+        type: array
+      updated_at:
+        type: string
+    type: object
+  model.PredictDetail:
+    properties:
+      data:
+        properties:
+          bridge:
+            items:
+              type: integer
+            type: array
+          caries:
+            items:
+              type: integer
+            type: array
+          crown:
+            items:
+              type: integer
+            type: array
+          embedded:
+            items:
+              type: integer
+            type: array
+          endo:
+            items:
+              type: integer
+            type: array
+          filling:
+            items:
+              type: integer
+            type: array
+          imp:
+            items:
+              type: integer
+            type: array
+          impacted:
+            items:
+              type: integer
+            type: array
+          post:
+            items:
+              type: integer
+            type: array
+          r_r:
+            items:
+              type: integer
+            type: array
+        type: object
+      filename:
+        type: string
+      text:
+        type: string
+    type: object
+  model.User:
+    properties:
+      account:
+        maxLength: 64
+        type: string
+      name:
+        maxLength: 64
+        type: string
+      passconf:
+        type: string
+      password:
+        description: 只能創建和更新
+        maxLength: 1024
+        type: string
+      roles:
+        items:
+          type: string
+        maxItems: 1024
+        type: array
+      status:
+        maximum: 11
+        type: integer
+      user_id:
+        maximum: 11
+        type: integer
+    required:
+    - account
+    - name
+    - passconf
+    - password
+    - roles
+    - status
+    type: object
   utils.IH200:
     properties:
+      data: {}
       msg:
         default: 成功
         type: string
-      predict: {}
       status:
         default: true
         type: boolean
@@ -25,35 +126,7 @@ info:
   title: Gin Go Pano
   version: "1.0"
 paths:
-  /predict/grpc:
-    post:
-      operationId: "2"
-      parameters:
-      - description: 請使用診所ID
-        in: formData
-        name: clinic_id
-        required: true
-        type: integer
-      - description: 請選擇牙齒的X光圖
-        in: formData
-        name: nhicode
-        required: true
-        type: file
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.IH200'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/utils.IH500'
-      summary: GRPC上傳圖片和AI辨識
-      tags:
-      - predict
-  /predict/http:
+  /api/predict:
     post:
       operationId: "1"
       parameters:
@@ -71,9 +144,14 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: 辨識資料
           schema:
-            $ref: '#/definitions/utils.IH200'
+            allOf:
+            - $ref: '#/definitions/utils.IH200'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Predict'
+              type: object
         "500":
           description: Internal Server Error
           schema:
@@ -81,4 +159,172 @@ paths:
       summary: HTTP上傳圖片和AI辨識
       tags:
       - predict
+  /api/user:
+    get:
+      operationId: "2"
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 使用者
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.IH200'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.User'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.IH500'
+      summary: 獲取所有使用者
+      tags:
+      - User
+    post:
+      operationId: "3"
+      parameters:
+      - description: 名稱
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: 帳號
+        in: formData
+        name: account
+        required: true
+        type: string
+      - description: 密碼
+        in: formData
+        name: password
+        required: true
+        type: string
+      - description: 密碼確認
+        in: formData
+        name: passconf
+        required: true
+        type: string
+      - description: 權限
+        in: formData
+        items:
+          type: string
+        name: roles
+        required: true
+        type: array
+      - description: 狀態
+        in: formData
+        name: status
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.IH200'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.IH500'
+      summary: 新增使用者
+      tags:
+      - User
+    put:
+      operationId: "4"
+      parameters:
+      - description: 名稱
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: 帳號
+        in: formData
+        name: account
+        required: true
+        type: string
+      - description: 權限
+        in: formData
+        items:
+          type: string
+        name: roles
+        required: true
+        type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.IH200'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.IH500'
+      summary: 更新使用者資訊
+      tags:
+      - User
+  /api/user/password:
+    patch:
+      operationId: "5"
+      parameters:
+      - description: 使用者ID
+        in: formData
+        name: user_id
+        required: true
+        type: integer
+      - description: 密碼
+        in: formData
+        name: password
+        required: true
+        type: string
+      - description: 密碼確認
+        in: formData
+        name: passconf
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.IH200'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.IH500'
+      summary: 更新使用者密碼
+      tags:
+      - User
+  /api/user/status:
+    patch:
+      operationId: "6"
+      parameters:
+      - description: 使用者ID
+        in: formData
+        name: user_id
+        required: true
+        type: integer
+      - description: 狀態
+        in: formData
+        name: status
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.IH200'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.IH500'
+      summary: 更新使用者狀態（status:0 - 已刪除，status:1 - 使用中）
+      tags:
+      - User
 swagger: "2.0"

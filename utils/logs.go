@@ -3,6 +3,7 @@ package utils
 import (
 	"path"
 
+	"github.com/gin-gonic/gin"
 	"github.com/natefinch/lumberjack"
 	"github.com/sirupsen/logrus"
 )
@@ -16,6 +17,17 @@ var LogInstance = logrus.New()
 
 // 日誌初始化
 func init() {
+	settings()
+}
+
+func Reset() {
+	if gin.Mode() == gin.TestMode {
+		logPath = "../../../log"
+	}
+	settings()
+}
+
+func settings() {
 	// 打開文件
 	logFileName := path.Join(logPath, logFile)
 	// 使用滾動壓縮方式記錄日誌

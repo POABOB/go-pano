@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"sync"
 
 	"go-pano/config"
@@ -12,32 +13,41 @@ import (
 	"gorm.io/gorm/logger"
 )
 
+var (
+	dbInstance *DBInstance
+)
+
+// func init() {
+// 	dbInstance = &DBInstance{instance: dbInit()}
+// }
+
 type IDBInstance interface {
 	DB() *gorm.DB
 }
 
 // DBInstance is a singleton DB instance
 type DBInstance struct {
-	//
-	initializer func() interface{}
-	instance    interface{}
-	once        sync.Once
+	instance *gorm.DB
+	once     sync.Once
 }
 
-var (
-	dbInstance *DBInstance
-)
-
 // 獲取實例，且避免重複實例化
-func (i *DBInstance) Instance() interface{} {
+func (i *DBInstance) DB() *gorm.DB {
 	i.once.Do(func() {
-		i.instance = i.initializer()
+		fmt.Println(12356)
+		i.instance = dbInit()
 	})
 	return i.instance
 }
 
+// 獲取實例，且避免重複實例化
+func NewMockInstance(m *gorm.DB, o sync.Once) IDBInstance {
+	o.Do(func() {})
+	return &DBInstance{m, o}
+}
+
 // DB初始化
-func dbInit() interface{} {
+func dbInit() *gorm.DB {
 	lv := logger.Error
 	if config.Server.Mode != gin.ReleaseMode {
 		lv = logger.Info // output debug logs in dev mode
@@ -57,14 +67,4 @@ func dbInit() interface{} {
 	stdDB.SetMaxOpenConns(config.Database.MaxOpenConns)
 
 	return db
-}
-
-// 連線成功後獲取DB的連線訊息
-func DB() *gorm.DB {
-	return dbInstance.Instance().(*gorm.DB)
-}
-
-// 初始化
-func init() {
-	dbInstance = &DBInstance{initializer: dbInit}
 }
