@@ -175,13 +175,11 @@ Migration failed: Error 1146: Table 'pano.clinic' doesn't exist handling 2023011
 ## TODO
 
 - Write down the real process
-- TEST FUNC
-- DB Schema migrate
-- User CRUD API
+- Finish Predict Unit Tests
+- User Login API
+  - RBAC control
 - Clinic Manage API
-  - CRUD Clinic
-  - Token generate
-  - quota limit
-- Statistic API
+  - Clinic Token Request
+- Record API
   - services used per month every clinic
   - services score list
