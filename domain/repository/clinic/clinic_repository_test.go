@@ -158,7 +158,7 @@ func TestClinicRepository(test *testing.T) {
 	test.Run("成功：Update成功更新。", func(test *testing.T) {
 		s.mock.ExpectBegin()
 		s.mock.ExpectExec(
-			regexp.QuoteMeta("UPDATE `Clinic` SET `name`=?,`start_at`=?,`end_at`=?,`quota_per_month`=? WHERE clinic_id = ?")).
+			regexp.QuoteMeta("UPDATE `Clinic` SET `name`=?,`start_at`=?,`end_at`=?,`quota_per_month`=? WHERE `clinic_id` = ?")).
 			WithArgs(getClinic[0].Name, getClinic[0].StartAt, getClinic[0].EndAt, getClinic[0].QuotaPerMonth, getClinic[0].ClinicId).
 			WillReturnResult(sqlmock.NewResult(0, 1))
 		s.mock.ExpectCommit()
@@ -182,7 +182,7 @@ func TestClinicRepository(test *testing.T) {
 	test.Run("失敗：Update，沒有更新到資料。", func(test *testing.T) {
 		s.mock.ExpectBegin()
 		s.mock.ExpectExec(
-			regexp.QuoteMeta("UPDATE `Clinic` SET `name`=?,`start_at`=?,`end_at`=?,`quota_per_month`=? WHERE clinic_id = ?")).
+			regexp.QuoteMeta("UPDATE `Clinic` SET `name`=?,`start_at`=?,`end_at`=?,`quota_per_month`=? WHERE `clinic_id` = ?")).
 			WithArgs(getClinic[0].Name, getClinic[0].StartAt, getClinic[0].EndAt, getClinic[0].QuotaPerMonth, getClinic[0].ClinicId).
 			WillReturnResult(sqlmock.NewResult(0, 0))
 		s.mock.ExpectCommit()
@@ -206,7 +206,7 @@ func TestClinicRepository(test *testing.T) {
 	test.Run("失敗：Update，有錯誤發生。", func(test *testing.T) {
 		s.mock.ExpectBegin()
 		s.mock.ExpectExec(
-			regexp.QuoteMeta("UPDATE `Clinic` SET `name`=?,`start_at`=?,`end_at`=?,`quota_per_month`=? WHERE clinic_id = ?")).
+			regexp.QuoteMeta("UPDATE `Clinic` SET `name`=?,`start_at`=?,`end_at`=?,`quota_per_month`=? WHERE `clinic_id` = ?")).
 			WithArgs(getClinic[0].Name, getClinic[0].StartAt, getClinic[0].EndAt, getClinic[0].QuotaPerMonth, getClinic[0].ClinicId).
 			WillReturnError(errors.New("有錯誤發生"))
 		s.mock.ExpectRollback()

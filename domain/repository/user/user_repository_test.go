@@ -123,7 +123,7 @@ func TestUserRepository(test *testing.T) {
 	test.Run("成功：Create成功插入。", func(test *testing.T) {
 		s.mock.ExpectBegin()
 		s.mock.ExpectExec(
-			regexp.QuoteMeta("INSERT INTO `user_create_forms` (`name`,`account`,`roles_string`,`password`,`status`) VALUES (?,?,?,?,?)")).
+			regexp.QuoteMeta("INSERT INTO `Users` (`name`,`account`,`roles_string`,`password`,`status`) VALUES (?,?,?,?,?)")).
 			WithArgs(getUser[0].Name, getUser[0].Account, getUser[0].RolesString, sqlmock.AnyArg(), getUser[0].Status).
 			WillReturnResult(sqlmock.NewResult(1, 1))
 		s.mock.ExpectCommit()
@@ -145,7 +145,7 @@ func TestUserRepository(test *testing.T) {
 	test.Run("失敗：Create，有錯誤發生。", func(test *testing.T) {
 		s.mock.ExpectBegin()
 		s.mock.ExpectExec(
-			regexp.QuoteMeta("INSERT INTO `user_create_forms` (`name`,`account`,`roles_string`,`password`,`status`) VALUES (?,?,?,?,?)")).
+			regexp.QuoteMeta("INSERT INTO `Users` (`name`,`account`,`roles_string`,`password`,`status`) VALUES (?,?,?,?,?)")).
 			WithArgs(getUser[0].Name, getUser[0].Account, getUser[0].RolesString, sqlmock.AnyArg(), getUser[0].Status).
 			WillReturnError(errors.New("有錯誤發生"))
 		s.mock.ExpectRollback()

@@ -53,7 +53,7 @@ func (ctrl *ClinicRepository) Create(clinic *model.ClinicCreateForm, token strin
 
 // 更新Clinic
 func (ctrl *ClinicRepository) Update(clinic *model.ClinicUpdateForm) error {
-	if db := ctrl.mysql.DB().Table("Clinic").Omit("clinic_id").Where("clinic_id = ?", clinic.ClinicId).Updates(clinic); db.Error != nil {
+	if db := ctrl.mysql.DB().Table("Clinic").Omit("clinic_id").Updates(clinic); db.Error != nil {
 		return db.Error
 	} else if db.RowsAffected == 0 {
 		return utils.ErrFailed
