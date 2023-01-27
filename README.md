@@ -205,8 +205,13 @@ func NewRouter(app *gin.Engine) {
 
 	api := app.Group("/api")
 	{
-		// CLINIC，使用wire
+		// After
 		http.NewClinicHandler(api, initClinicService())
+
+    // Before
+    // cr := clinic_repository.NewClinicRepository(db)
+		// cs := clinic_service.NewClinicService(cr)
+		// http.NewClinicHandler(api, cs)
 
 	}
 
