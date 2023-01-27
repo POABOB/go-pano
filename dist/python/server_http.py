@@ -34,12 +34,11 @@ def Start():
     5.曾經根管治療: %(endo)s"""
 
     predict = []
-    index = 0
     anomaly_list = ['R.R', 'caries', 'crown', 'endo', 'post', 'filling', 'Imp', 'embedded', 'impacted', 'missing']
     for filename, teeth in tooth_anomaly_dict.items():
         filename = f'{filename}.jpg'
-        predict[index] = {}
-        predict[index]["filename"] = filename
+        temp = {}
+        temp["filename"] = filename
 
         teeth_anomalies_dict = {anomaly: [] for anomaly in anomaly_list}
         for tooth_number, anomalies in teeth.items():
@@ -52,9 +51,9 @@ def Start():
                 anomaly] else 'no finding' for
             anomaly in text_anomalies_list}
 
-        predict[index]['text'] = text % text_dict
-        predict[index]['data'] = teeth_anomalies_dict
-        index++
+        temp['text'] = text % text_dict
+        temp['data'] = teeth_anomalies_dict
+        predict.append(temp)
 
 
     # 假資料

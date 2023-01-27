@@ -1,4 +1,4 @@
-package repository
+package user_repository
 
 import (
 	"go-pano/domain/model"
@@ -11,8 +11,7 @@ import (
 type IUserRepository interface {
 	GetAll() ([]model.User, error)
 	Update(*model.UserUpdateForm) error
-	UpdateStatus(*model.UserStatusForm) error
-	Create(*model.User) error
+	Create(*model.UserCreateForm) error
 	UpdatePassword(*model.UserPasswordForm) error
 }
 
@@ -39,10 +38,10 @@ func (ctrl *UserRepository) GetAll() ([]model.User, error) {
 }
 
 // 插入User
-func (ctrl *UserRepository) Create(user *model.User) error {
+func (ctrl *UserRepository) Create(user *model.UserCreateForm) error {
 	encrypted, _ := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	user.Password = string(encrypted)
-	if db := ctrl.mysql.DB().Omit("user_id").Create(user); db.Error != nil {
+	if db := ctrl.mysql.DB().Table("Users").Create(user); db.Error != nil {
 		return db.Error
 	}
 
@@ -52,17 +51,6 @@ func (ctrl *UserRepository) Create(user *model.User) error {
 // 更新User
 func (ctrl *UserRepository) Update(user *model.UserUpdateForm) error {
 	if db := ctrl.mysql.DB().Table("Users").Updates(user); db.Error != nil {
-		return db.Error
-	} else if db.RowsAffected == 0 {
-		return utils.ErrFailed
-	}
-
-	return nil
-}
-
-// 刪除/復原User
-func (ctrl *UserRepository) UpdateStatus(user *model.UserStatusForm) error {
-	if db := ctrl.mysql.DB().Table("Users").Where("user_id = ?", user.UserId).Update("status", user.Status); db.Error != nil {
 		return db.Error
 	} else if db.RowsAffected == 0 {
 		return utils.ErrFailed

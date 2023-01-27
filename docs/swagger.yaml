@@ -1,4 +1,94 @@
 definitions:
+  model.Clinic:
+    properties:
+      clinic_id:
+        example: 1
+        maximum: 11
+        type: integer
+      end_at:
+        example: "2099-12-31"
+        type: string
+      name:
+        example: 診所
+        maxLength: 128
+        type: string
+      quota_per_month:
+        example: 200
+        maximum: 100000
+        type: integer
+      start_at:
+        example: "2022-10-10"
+        type: string
+      token:
+        example: token1231324568913
+        maxLength: 1024
+        type: string
+    required:
+    - clinic_id
+    - end_at
+    - name
+    - quota_per_month
+    - start_at
+    - token
+    type: object
+  model.ClinicCreateForm:
+    properties:
+      end_at:
+        example: "2099-12-31"
+        type: string
+      name:
+        example: 診所
+        maxLength: 128
+        type: string
+      quota_per_month:
+        example: 200
+        maximum: 100000
+        type: integer
+      start_at:
+        example: "2022-10-10"
+        type: string
+    required:
+    - end_at
+    - name
+    - quota_per_month
+    - start_at
+    type: object
+  model.ClinicTokenForm:
+    properties:
+      clinic_id:
+        example: 1
+        maximum: 11
+        type: integer
+    required:
+    - clinic_id
+    type: object
+  model.ClinicUpdateForm:
+    properties:
+      clinic_id:
+        example: 1
+        maximum: 11
+        type: integer
+      end_at:
+        example: "2099-12-31"
+        type: string
+      name:
+        example: 診所
+        maxLength: 128
+        type: string
+      quota_per_month:
+        example: 200
+        maximum: 100000
+        type: integer
+      start_at:
+        example: "2022-10-10"
+        type: string
+    required:
+    - clinic_id
+    - end_at
+    - name
+    - quota_per_month
+    - start_at
+    type: object
   model.Predict:
     properties:
       clinic_id:
@@ -7,13 +97,13 @@ definitions:
         type: string
       filename:
         type: string
-      id:
-        type: integer
       predict:
         description: JSON要顯示，但是不要存入DB
         items:
           $ref: '#/definitions/model.PredictDetail'
         type: array
+      predict_id:
+        type: integer
       updated_at:
         type: string
     type: object
@@ -70,26 +160,61 @@ definitions:
   model.User:
     properties:
       account:
+        example: user
         maxLength: 64
         type: string
       name:
+        example: User
         maxLength: 64
         type: string
-      passconf:
-        type: string
-      password:
-        description: 只能創建和更新
-        maxLength: 1024
-        type: string
       roles:
+        example:
+        - admin
         items:
           type: string
         maxItems: 1024
         type: array
       status:
+        example: 1
         maximum: 11
         type: integer
       user_id:
+        example: 1
+        maximum: 11
+        type: integer
+    required:
+    - account
+    - name
+    - roles
+    - user_id
+    type: object
+  model.UserCreateForm:
+    properties:
+      account:
+        example: user
+        maxLength: 64
+        type: string
+      name:
+        example: User
+        maxLength: 64
+        type: string
+      passconf:
+        example: password
+        type: string
+      password:
+        description: 只能創建和更新
+        example: password
+        maxLength: 1024
+        type: string
+      roles:
+        example:
+        - admin
+        items:
+          type: string
+        maxItems: 1024
+        type: array
+      status:
+        example: 1
         maximum: 11
         type: integer
     required:
@@ -98,7 +223,57 @@ definitions:
     - passconf
     - password
     - roles
-    - status
+    type: object
+  model.UserPasswordForm:
+    properties:
+      passconf:
+        description: 不對DB做任何事
+        example: password
+        type: string
+      password:
+        description: 只能創建和更新
+        example: password
+        maxLength: 1024
+        type: string
+      user_id:
+        example: 1
+        maximum: 11
+        type: integer
+    required:
+    - passconf
+    - password
+    - user_id
+    type: object
+  model.UserUpdateForm:
+    properties:
+      account:
+        example: user
+        maxLength: 64
+        type: string
+      name:
+        example: User
+        maxLength: 64
+        type: string
+      roles:
+        example:
+        - admin
+        items:
+          type: string
+        maxItems: 1024
+        type: array
+      status:
+        example: 1
+        maximum: 11
+        type: integer
+      user_id:
+        example: 1
+        maximum: 11
+        type: integer
+    required:
+    - account
+    - name
+    - roles
+    - user_id
     type: object
   utils.IH200:
     properties:
@@ -126,6 +301,108 @@ info:
   title: Gin Go Pano
   version: "1.0"
 paths:
+  /api/clinic:
+    get:
+      consumes:
+      - application/json
+      operationId: "7"
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 診所
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.IH200'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Clinic'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.IH500'
+      summary: 獲取所有診所
+      tags:
+      - Clinic
+    post:
+      consumes:
+      - application/json
+      operationId: "8"
+      parameters:
+      - description: body
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.ClinicCreateForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.IH200'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.IH500'
+      summary: 新增診所
+      tags:
+      - Clinic
+    put:
+      consumes:
+      - application/json
+      operationId: "9"
+      parameters:
+      - description: body
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.ClinicUpdateForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.IH200'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.IH500'
+      summary: 更新診所資訊
+      tags:
+      - Clinic
+  /api/clinic/token:
+    patch:
+      consumes:
+      - application/json
+      operationId: "10"
+      parameters:
+      - description: body
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.ClinicTokenForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.IH200'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.IH500'
+      summary: 更新診所Token
+      tags:
+      - Clinic
   /api/predict:
     post:
       operationId: "1"
@@ -156,11 +433,13 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/utils.IH500'
-      summary: HTTP上傳圖片和AI辨識
+      summary: GRPC上傳圖片和AI辨識
       tags:
-      - predict
+      - Predict
   /api/user:
     get:
+      consumes:
+      - application/json
       operationId: "2"
       produces:
       - application/json
@@ -184,40 +463,16 @@ paths:
       tags:
       - User
     post:
+      consumes:
+      - application/json
       operationId: "3"
       parameters:
-      - description: 名稱
-        in: formData
-        name: name
+      - description: body
+        in: body
+        name: data
         required: true
-        type: string
-      - description: 帳號
-        in: formData
-        name: account
-        required: true
-        type: string
-      - description: 密碼
-        in: formData
-        name: password
-        required: true
-        type: string
-      - description: 密碼確認
-        in: formData
-        name: passconf
-        required: true
-        type: string
-      - description: 權限
-        in: formData
-        items:
-          type: string
-        name: roles
-        required: true
-        type: array
-      - description: 狀態
-        in: formData
-        name: status
-        required: true
-        type: integer
+        schema:
+          $ref: '#/definitions/model.UserCreateForm'
       produces:
       - application/json
       responses:
@@ -233,25 +488,16 @@ paths:
       tags:
       - User
     put:
+      consumes:
+      - application/json
       operationId: "4"
       parameters:
-      - description: 名稱
-        in: formData
-        name: name
+      - description: body
+        in: body
+        name: data
         required: true
-        type: string
-      - description: 帳號
-        in: formData
-        name: account
-        required: true
-        type: string
-      - description: 權限
-        in: formData
-        items:
-          type: string
-        name: roles
-        required: true
-        type: array
+        schema:
+          $ref: '#/definitions/model.UserUpdateForm'
       produces:
       - application/json
       responses:
@@ -268,23 +514,16 @@ paths:
       - User
   /api/user/password:
     patch:
+      consumes:
+      - application/json
       operationId: "5"
       parameters:
-      - description: 使用者ID
-        in: formData
-        name: user_id
+      - description: body
+        in: body
+        name: data
         required: true
-        type: integer
-      - description: 密碼
-        in: formData
-        name: password
-        required: true
-        type: string
-      - description: 密碼確認
-        in: formData
-        name: passconf
-        required: true
-        type: string
+        schema:
+          $ref: '#/definitions/model.UserPasswordForm'
       produces:
       - application/json
       responses:
@@ -297,34 +536,6 @@ paths:
           schema:
             $ref: '#/definitions/utils.IH500'
       summary: 更新使用者密碼
-      tags:
-      - User
-  /api/user/status:
-    patch:
-      operationId: "6"
-      parameters:
-      - description: 使用者ID
-        in: formData
-        name: user_id
-        required: true
-        type: integer
-      - description: 狀態
-        in: formData
-        name: status
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.IH200'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/utils.IH500'
-      summary: 更新使用者狀態（status:0 - 已刪除，status:1 - 使用中）
       tags:
       - User
 swagger: "2.0"

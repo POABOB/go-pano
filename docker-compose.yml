@@ -6,7 +6,7 @@ services:
     volumes:
       - ./dist/static:/app/go/static
     ports:
-      - 5000:5000
+      - 5001:5001
   pano-go:
     build: .
     container_name: pano-go
@@ -19,7 +19,7 @@ services:
     ports:
       - 80:80
   mysql:
-    image: cap1573/mysql:5.6
+    image: mariadb:10.9
     container_name: mysql
     restart: always
     environment:

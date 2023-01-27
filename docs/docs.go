@@ -16,15 +16,175 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/clinic": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Clinic"
+                ],
+                "summary": "獲取所有診所",
+                "operationId": "7",
+                "responses": {
+                    "200": {
+                        "description": "診所",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/utils.IH200"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.Clinic"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.IH500"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Clinic"
+                ],
+                "summary": "更新診所資訊",
+                "operationId": "9",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ClinicUpdateForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.IH200"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.IH500"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Clinic"
+                ],
+                "summary": "新增診所",
+                "operationId": "8",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ClinicCreateForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.IH200"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.IH500"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/clinic/token": {
+            "patch": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Clinic"
+                ],
+                "summary": "更新診所Token",
+                "operationId": "10",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ClinicTokenForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.IH200"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.IH500"
+                        }
+                    }
+                }
+            }
+        },
         "/api/predict": {
             "post": {
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "predict"
+                    "Predict"
                 ],
-                "summary": "HTTP上傳圖片和AI辨識",
+                "summary": "GRPC上傳圖片和AI辨識",
                 "operationId": "1",
                 "parameters": [
                     {
@@ -72,6 +232,9 @@ const docTemplate = `{
         },
         "/api/user": {
             "get": {
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -111,6 +274,9 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -121,28 +287,13 @@ const docTemplate = `{
                 "operationId": "4",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "名稱",
-                        "name": "name",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "帳號",
-                        "name": "account",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "description": "權限",
-                        "name": "roles",
-                        "in": "formData",
-                        "required": true
+                        "description": "body",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.UserUpdateForm"
+                        }
                     }
                 ],
                 "responses": {
@@ -161,6 +312,9 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -171,49 +325,13 @@ const docTemplate = `{
                 "operationId": "3",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "名稱",
-                        "name": "name",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "帳號",
-                        "name": "account",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "密碼",
-                        "name": "password",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "密碼確認",
-                        "name": "passconf",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "description": "權限",
-                        "name": "roles",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "狀態",
-                        "name": "status",
-                        "in": "formData",
-                        "required": true
+                        "description": "body",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.UserCreateForm"
+                        }
                     }
                 ],
                 "responses": {
@@ -234,6 +352,9 @@ const docTemplate = `{
         },
         "/api/user/password": {
             "patch": {
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -244,67 +365,13 @@ const docTemplate = `{
                 "operationId": "5",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "使用者ID",
-                        "name": "user_id",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "密碼",
-                        "name": "password",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "密碼確認",
-                        "name": "passconf",
-                        "in": "formData",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
+                        "description": "body",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
                         "schema": {
-                            "$ref": "#/definitions/utils.IH200"
+                            "$ref": "#/definitions/model.UserPasswordForm"
                         }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/utils.IH500"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/user/status": {
-            "patch": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "summary": "更新使用者狀態（status:0 - 已刪除，status:1 - 使用中）",
-                "operationId": "6",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "使用者ID",
-                        "name": "user_id",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "狀態",
-                        "name": "status",
-                        "in": "formData",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -325,6 +392,124 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "model.Clinic": {
+            "type": "object",
+            "required": [
+                "clinic_id",
+                "end_at",
+                "name",
+                "quota_per_month",
+                "start_at",
+                "token"
+            ],
+            "properties": {
+                "clinic_id": {
+                    "type": "integer",
+                    "maximum": 11,
+                    "example": 1
+                },
+                "end_at": {
+                    "type": "string",
+                    "example": "2099-12-31"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 128,
+                    "example": "診所"
+                },
+                "quota_per_month": {
+                    "type": "integer",
+                    "maximum": 100000,
+                    "example": 200
+                },
+                "start_at": {
+                    "type": "string",
+                    "example": "2022-10-10"
+                },
+                "token": {
+                    "type": "string",
+                    "maxLength": 1024,
+                    "example": "token1231324568913"
+                }
+            }
+        },
+        "model.ClinicCreateForm": {
+            "type": "object",
+            "required": [
+                "end_at",
+                "name",
+                "quota_per_month",
+                "start_at"
+            ],
+            "properties": {
+                "end_at": {
+                    "type": "string",
+                    "example": "2099-12-31"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 128,
+                    "example": "診所"
+                },
+                "quota_per_month": {
+                    "type": "integer",
+                    "maximum": 100000,
+                    "example": 200
+                },
+                "start_at": {
+                    "type": "string",
+                    "example": "2022-10-10"
+                }
+            }
+        },
+        "model.ClinicTokenForm": {
+            "type": "object",
+            "required": [
+                "clinic_id"
+            ],
+            "properties": {
+                "clinic_id": {
+                    "type": "integer",
+                    "maximum": 11,
+                    "example": 1
+                }
+            }
+        },
+        "model.ClinicUpdateForm": {
+            "type": "object",
+            "required": [
+                "clinic_id",
+                "end_at",
+                "name",
+                "quota_per_month",
+                "start_at"
+            ],
+            "properties": {
+                "clinic_id": {
+                    "type": "integer",
+                    "maximum": 11,
+                    "example": 1
+                },
+                "end_at": {
+                    "type": "string",
+                    "example": "2099-12-31"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 128,
+                    "example": "診所"
+                },
+                "quota_per_month": {
+                    "type": "integer",
+                    "maximum": 100000,
+                    "example": 200
+                },
+                "start_at": {
+                    "type": "string",
+                    "example": "2022-10-10"
+                }
+            }
+        },
         "model.Predict": {
             "type": "object",
             "properties": {
@@ -337,15 +522,15 @@ const docTemplate = `{
                 "filename": {
                     "type": "string"
                 },
-                "id": {
-                    "type": "integer"
-                },
                 "predict": {
                     "description": "JSON要顯示，但是不要存入DB",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.PredictDetail"
                     }
+                },
+                "predict_id": {
+                    "type": "integer"
                 },
                 "updated_at": {
                     "type": "string"
@@ -433,42 +618,153 @@ const docTemplate = `{
             "required": [
                 "account",
                 "name",
-                "passconf",
-                "password",
                 "roles",
-                "status"
+                "user_id"
             ],
             "properties": {
                 "account": {
                     "type": "string",
-                    "maxLength": 64
+                    "maxLength": 64,
+                    "example": "user"
                 },
                 "name": {
                     "type": "string",
-                    "maxLength": 64
-                },
-                "passconf": {
-                    "type": "string"
-                },
-                "password": {
-                    "description": "只能創建和更新",
-                    "type": "string",
-                    "maxLength": 1024
+                    "maxLength": 64,
+                    "example": "User"
                 },
                 "roles": {
                     "type": "array",
                     "maxItems": 1024,
                     "items": {
                         "type": "string"
-                    }
+                    },
+                    "example": [
+                        "admin"
+                    ]
                 },
                 "status": {
                     "type": "integer",
-                    "maximum": 11
+                    "maximum": 11,
+                    "example": 1
                 },
                 "user_id": {
                     "type": "integer",
-                    "maximum": 11
+                    "maximum": 11,
+                    "example": 1
+                }
+            }
+        },
+        "model.UserCreateForm": {
+            "type": "object",
+            "required": [
+                "account",
+                "name",
+                "passconf",
+                "password",
+                "roles"
+            ],
+            "properties": {
+                "account": {
+                    "type": "string",
+                    "maxLength": 64,
+                    "example": "user"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 64,
+                    "example": "User"
+                },
+                "passconf": {
+                    "type": "string",
+                    "example": "password"
+                },
+                "password": {
+                    "description": "只能創建和更新",
+                    "type": "string",
+                    "maxLength": 1024,
+                    "example": "password"
+                },
+                "roles": {
+                    "type": "array",
+                    "maxItems": 1024,
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "admin"
+                    ]
+                },
+                "status": {
+                    "type": "integer",
+                    "maximum": 11,
+                    "example": 1
+                }
+            }
+        },
+        "model.UserPasswordForm": {
+            "type": "object",
+            "required": [
+                "passconf",
+                "password",
+                "user_id"
+            ],
+            "properties": {
+                "passconf": {
+                    "description": "不對DB做任何事",
+                    "type": "string",
+                    "example": "password"
+                },
+                "password": {
+                    "description": "只能創建和更新",
+                    "type": "string",
+                    "maxLength": 1024,
+                    "example": "password"
+                },
+                "user_id": {
+                    "type": "integer",
+                    "maximum": 11,
+                    "example": 1
+                }
+            }
+        },
+        "model.UserUpdateForm": {
+            "type": "object",
+            "required": [
+                "account",
+                "name",
+                "roles",
+                "user_id"
+            ],
+            "properties": {
+                "account": {
+                    "type": "string",
+                    "maxLength": 64,
+                    "example": "user"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 64,
+                    "example": "User"
+                },
+                "roles": {
+                    "type": "array",
+                    "maxItems": 1024,
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "admin"
+                    ]
+                },
+                "status": {
+                    "type": "integer",
+                    "maximum": 11,
+                    "example": 1
+                },
+                "user_id": {
+                    "type": "integer",
+                    "maximum": 11,
+                    "example": 1
                 }
             }
         },

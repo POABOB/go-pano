@@ -1,4 +1,4 @@
-package repository
+package user_repository
 
 import (
 	"database/sql"
@@ -65,11 +65,13 @@ func TestUserRepository(test *testing.T) {
 
 	var getUser []model.User = []model.User{
 		{
-			UserId:      1,
-			Name:        "User1",
-			Account:     "user1",
-			RolesString: `["admin"]`,
-			Status:      1,
+			UserUpdateForm: model.UserUpdateForm{
+				UserId:      1,
+				Name:        "User1",
+				Account:     "user1",
+				RolesString: `["admin"]`,
+				Status:      1,
+			},
 		},
 	}
 
@@ -121,14 +123,13 @@ func TestUserRepository(test *testing.T) {
 	test.Run("成功：Create成功插入。", func(test *testing.T) {
 		s.mock.ExpectBegin()
 		s.mock.ExpectExec(
-			regexp.QuoteMeta("INSERT INTO `Users` (`name`,`account`,`roles_string`,`password`,`status`) VALUES (?,?,?,?,?)")).
+			regexp.QuoteMeta("INSERT INTO `user_create_forms` (`name`,`account`,`roles_string`,`password`,`status`) VALUES (?,?,?,?,?)")).
 			WithArgs(getUser[0].Name, getUser[0].Account, getUser[0].RolesString, sqlmock.AnyArg(), getUser[0].Status).
 			WillReturnResult(sqlmock.NewResult(1, 1))
 		s.mock.ExpectCommit()
 
 		err := s.repository.Create(
-			&model.User{
-				UserId:      1,
+			&model.UserCreateForm{
 				Name:        "User1",
 				Account:     "user1",
 				Password:    "ppaass",
@@ -144,12 +145,11 @@ func TestUserRepository(test *testing.T) {
 	test.Run("失敗：Create，有錯誤發生。", func(test *testing.T) {
 		s.mock.ExpectBegin()
 		s.mock.ExpectExec(
-			regexp.QuoteMeta("INSERT INTO `Users` (`name`,`account`,`roles_string`,`password`,`status`) VALUES (?,?,?,?,?)")).
+			regexp.QuoteMeta("INSERT INTO `user_create_forms` (`name`,`account`,`roles_string`,`password`,`status`) VALUES (?,?,?,?,?)")).
 			WithArgs(getUser[0].Name, getUser[0].Account, getUser[0].RolesString, sqlmock.AnyArg(), getUser[0].Status).
 			WillReturnError(errors.New("有錯誤發生"))
 		s.mock.ExpectRollback()
-		err := s.repository.Create(&model.User{
-			UserId:      1,
+		err := s.repository.Create(&model.UserCreateForm{
 			Name:        "User1",
 			Account:     "user1",
 			Password:    "ppaass",
@@ -166,8 +166,8 @@ func TestUserRepository(test *testing.T) {
 	test.Run("成功：Update成功更新。", func(test *testing.T) {
 		s.mock.ExpectBegin()
 		s.mock.ExpectExec(
-			regexp.QuoteMeta("UPDATE `Users` SET `name`=?,`account`=?,`roles_string`=? WHERE `user_id` = ?")).
-			WithArgs(getUser[0].Name, getUser[0].Account, getUser[0].RolesString, getUser[0].UserId).
+			regexp.QuoteMeta("UPDATE `Users` SET `name`=?,`account`=?,`roles_string`=?,`status`=? WHERE `user_id` = ?")).
+			WithArgs(getUser[0].Name, getUser[0].Account, getUser[0].RolesString, getUser[0].Status, getUser[0].UserId).
 			WillReturnResult(sqlmock.NewResult(0, 1))
 		s.mock.ExpectCommit()
 
@@ -178,6 +178,7 @@ func TestUserRepository(test *testing.T) {
 				Account:     "user1",
 				Roles:       []string{"admin"},
 				RolesString: `["admin"]`,
+				Status:      1,
 			})
 
 		assert.NoError(test, err)
@@ -186,8 +187,8 @@ func TestUserRepository(test *testing.T) {
 	test.Run("失敗：Update，沒有更新到資料。", func(test *testing.T) {
 		s.mock.ExpectBegin()
 		s.mock.ExpectExec(
-			regexp.QuoteMeta("UPDATE `Users` SET `name`=?,`account`=?,`roles_string`=? WHERE `user_id` = ?")).
-			WithArgs(getUser[0].Name, getUser[0].Account, getUser[0].RolesString, getUser[0].UserId).
+			regexp.QuoteMeta("UPDATE `Users` SET `name`=?,`account`=?,`roles_string`=?,`status`=? WHERE `user_id` = ?")).
+			WithArgs(getUser[0].Name, getUser[0].Account, getUser[0].RolesString, getUser[0].Status, getUser[0].UserId).
 			WillReturnResult(sqlmock.NewResult(0, 0))
 		s.mock.ExpectCommit()
 
@@ -198,6 +199,7 @@ func TestUserRepository(test *testing.T) {
 				Account:     "user1",
 				Roles:       []string{"admin"},
 				RolesString: `["admin"]`,
+				Status:      1,
 			})
 
 		assert.EqualError(test, err, "Failed")
@@ -206,8 +208,8 @@ func TestUserRepository(test *testing.T) {
 	test.Run("失敗：Update，有錯誤發生。", func(test *testing.T) {
 		s.mock.ExpectBegin()
 		s.mock.ExpectExec(
-			regexp.QuoteMeta("UPDATE `Users` SET `name`=?,`account`=?,`roles_string`=? WHERE `user_id` = ?")).
-			WithArgs(getUser[0].Name, getUser[0].Account, getUser[0].RolesString, getUser[0].UserId).
+			regexp.QuoteMeta("UPDATE `Users` SET `name`=?,`account`=?,`roles_string`=?,`status`=? WHERE `user_id` = ?")).
+			WithArgs(getUser[0].Name, getUser[0].Account, getUser[0].RolesString, getUser[0].Status, getUser[0].UserId).
 			WillReturnError(errors.New("有錯誤發生"))
 		s.mock.ExpectRollback()
 
@@ -218,58 +220,7 @@ func TestUserRepository(test *testing.T) {
 				Account:     "user1",
 				Roles:       []string{"admin"},
 				RolesString: `["admin"]`,
-			})
-
-		assert.EqualError(test, err, "有錯誤發生")
-	})
-
-	// UpdateStatus()
-	test.Run("成功：UpdateStatus成功更新。", func(test *testing.T) {
-		s.mock.ExpectBegin()
-		s.mock.ExpectExec(
-			regexp.QuoteMeta("UPDATE `Users` SET `status`=? WHERE user_id = ?")).
-			WithArgs(getUser[0].Status, getUser[0].UserId).
-			WillReturnResult(sqlmock.NewResult(0, 1))
-		s.mock.ExpectCommit()
-
-		err := s.repository.UpdateStatus(
-			&model.UserStatusForm{
-				UserId: 1,
-				Status: 1,
-			})
-
-		assert.NoError(test, err)
-	})
-
-	test.Run("失敗：UpdateStatus，沒有更新到資料。", func(test *testing.T) {
-		s.mock.ExpectBegin()
-		s.mock.ExpectExec(
-			regexp.QuoteMeta("UPDATE `Users` SET `status`=? WHERE user_id = ?")).
-			WithArgs(getUser[0].Status, getUser[0].UserId).
-			WillReturnResult(sqlmock.NewResult(0, 0))
-		s.mock.ExpectCommit()
-
-		err := s.repository.UpdateStatus(
-			&model.UserStatusForm{
-				UserId: 1,
-				Status: 1,
-			})
-
-		assert.EqualError(test, err, "Failed")
-	})
-
-	test.Run("失敗：UpdateStatus，有錯誤發生。", func(test *testing.T) {
-		s.mock.ExpectBegin()
-		s.mock.ExpectExec(
-			regexp.QuoteMeta("UPDATE `Users` SET `status`=? WHERE user_id = ?")).
-			WithArgs(getUser[0].Status, getUser[0].UserId).
-			WillReturnError(errors.New("有錯誤發生"))
-		s.mock.ExpectRollback()
-
-		err := s.repository.UpdateStatus(
-			&model.UserStatusForm{
-				UserId: 1,
-				Status: 1,
+				Status:      1,
 			})
 
 		assert.EqualError(test, err, "有錯誤發生")

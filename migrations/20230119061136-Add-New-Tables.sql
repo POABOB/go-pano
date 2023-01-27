@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS `Clinic` (
   `clinic_id` int PRIMARY KEY AUTO_INCREMENT COMMENT '診所ID',
   `name` varchar(128) NOT NULL COMMENT '診所名稱',
   `start_at` date NOT NULL COMMENT '開始日',
-  `end_at` date NOT NULL DEFAULT "9999-12-31" COMMENT '結束日',
+  `end_at` date NOT NULL DEFAULT "9999-12-31 23:59:59" COMMENT '結束日',
   `quota_per_month` int NOT NULL DEFAULT 200 COMMENT '每月使用額度',
   `token` varchar(1024) NOT NULL COMMENT 'Token'
 )ENGINE = InnoDB DEFAULT CHARSET=utf8mb4;
@@ -29,9 +29,9 @@ CREATE TABLE IF NOT EXISTS `Users` (
 ALTER TABLE `Predict` CHANGE `predict_id` `predict_id` int NOT NULL AUTO_INCREMENT COMMENT '辨識ID';
 ALTER TABLE `Predict` CHANGE `clinic_id` `clinic_id` int not null DEFAULT 0 COMMENT '診所ID';
 ALTER TABLE `Predict` CHANGE `filename` `filename` varchar(128) not null DEFAULT '' COMMENT '檔案名稱';
-ALTER TABLE `Predict` CHANGE `predict` `predict` varchar(1024) not null DEFAULT '' COMMENT '辨識';
-ALTER TABLE `Predict` CHANGE `created_at` `created_at` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT '新增時間';
-ALTER TABLE `Predict` CHANGE `updated_at` `updated_at` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新時間';
+ALTER TABLE `Predict` CHANGE `predict_string` `predict_string` varchar(1024) not null DEFAULT '' COMMENT '辨識';
+ALTER TABLE `Predict` CHANGE `created_at` `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '新增時間';
+ALTER TABLE `Predict` CHANGE `updated_at` `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新時間';
 
 
 CREATE INDEX `Clinic_index_0` ON `Clinic` (`start_at`);
@@ -61,6 +61,12 @@ ALTER TABLE `Predict` ADD CONSTRAINT `fk_clinic_id_1` FOREIGN KEY (`clinic_id`) 
 ALTER TABLE `Record` ADD CONSTRAINT `fk_clinic_id_2` FOREIGN KEY (`clinic_id`) REFERENCES `Clinic` (`clinic_id`);
 
 ALTER TABLE `Record` ADD CONSTRAINT `fk_predict_id_1` FOREIGN KEY (`predict_id`) REFERENCES `Predict` (`predict_id`);
+
+
+INSERT INTO `Users` (`user_id`, `name`, `account`, `password`, `roles_string`, `status`) VALUES
+(1, 'ADMIN', '__pano_admin__', '$2a$10$94v4wlp6ZRanI6Xv1k4hyePZJlTJf.o08fSUqPby/mABlGGgRiRAa', '[\"admin\"]', 1);
+INSERT INTO `Clinic` (`clinic_id`, `name`, `start_at`, `end_at`, `quota_per_month`, `token`) VALUES
+(1, '測試診所', '2022-10-10', '2099-12-31', 200, 'rHsxKe6qPxxoZJh2oPJPk2mVzNFB5XmfOnkLpCwvbhnOnbU9i3');
 
 
 

@@ -35,9 +35,8 @@ COPY . /python/
 RUN python3 -m pip install -r /python/requirements.txt --quiet
 # RUN touch /usr/local/lib/python3.9/dist-packages/yolov5/requirements.txt
 
-
 # 暴露端口
 # PYTHON HTTP || GRPC
 WORKDIR /python/
-EXPOSE 5000
-CMD ["python3", "server_http.py"]
+EXPOSE 5001
+CMD ["python3", "server_grpc.py"]

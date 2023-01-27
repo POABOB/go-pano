@@ -17,10 +17,6 @@ var (
 	dbInstance *DBInstance
 )
 
-// func init() {
-// 	dbInstance = &DBInstance{instance: dbInit()}
-// }
-
 type IDBInstance interface {
 	DB() *gorm.DB
 }
@@ -44,6 +40,10 @@ func (i *DBInstance) DB() *gorm.DB {
 func NewMockInstance(m *gorm.DB, o sync.Once) IDBInstance {
 	o.Do(func() {})
 	return &DBInstance{m, o}
+}
+
+func NewDBInstance() IDBInstance {
+	return &DBInstance{instance: dbInit()}
 }
 
 // DB初始化

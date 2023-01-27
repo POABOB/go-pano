@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package predict;
+
+option go_package = "./protos/predict;predict";
+
+// 定義服務
+service Predict {
+    rpc predict (Request) returns (Response) {};
+}
+
+// 定義請求和返回
+message Request {
+    string Dir = 1;
+}
+
+message Response {
+    bool isSuccessful = 1;
+	string msg = 2;
+	string predict = 3;
+}

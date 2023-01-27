@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"go-pano/config"
-	"go-pano/router"
+	router_v1 "go-pano/router"
 
 	"github.com/gin-gonic/gin"
 )
@@ -33,7 +33,7 @@ func main() {
 	app.MaxMultipartMemory = config.Server.MaxMultipartMemory << 20
 
 	// 路由添加
-	router.NewRouter(app)
+	router_v1.NewRouter(app)
 
 	// 監聽
 	app.Run(*addr)

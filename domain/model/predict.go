@@ -1,20 +1,16 @@
 package model
 
-import (
-	"time"
-)
-
 // Predict model
 type Predict struct {
-	ID       int    `gorm:"primary_key" json:"id"`
-	ClinicId int    `json:"clinic_id"`
-	Filename string `json:"filename"`
+	PredictId int    `gorm:"primaryKey" json:"predict_id"`
+	ClinicId  int    ` json:"clinic_id"`
+	Filename  string ` json:"filename"`
 	// JSON不要顯示，但是要存入DB
-	PredictString string `json:"-" gorm:"predict"`
+	PredictString string `json:"-"`
 	// JSON要顯示，但是不要存入DB
-	Predict   []PredictDetail `json:"predict" gorm:"-:all"`
-	CreatedAt time.Time       `json:"created_at"`
-	UpdatedAt time.Time       `json:"updated_at"`
+	Predict   []PredictDetail `gorm:"-:all" json:"predict"`
+	CreatedAt string          `json:"created_at"`
+	UpdatedAt string          `json:"updated_at"`
 }
 
 type PredictDetail struct {
@@ -48,6 +44,5 @@ type Result struct {
 
 // 表單驗證 https://pkg.go.dev/github.com/go-playground/validator/v10#section-readme
 type PredictForm struct {
-	ClinicId int    `form:"clinic_id" json:"clinic_id" binding:"required,max=11"`
-	Method   string `uri:"method" binding:"max=4"`
+	ClinicId int `form:"clinic_id" json:"clinic_id" binding:"required,max=11"`
 }
