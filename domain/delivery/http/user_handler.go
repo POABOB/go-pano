@@ -23,7 +23,10 @@ func NewUserHandler(e *gin.RouterGroup, s user_service.IUserService) {
 	handler := UserHandler{UserService: s}
 
 	// router
+	e.POST("/login", handler.UpdatePassword)
 	user := e.Group("/user")
+	user.Use(utils.JWTAuthMiddleware())
+	// TODO RBAC
 	{
 		user.GET("", handler.Get)
 		user.POST("", handler.Create)

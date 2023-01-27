@@ -154,6 +154,66 @@ All comments were written in router/router.go, so you need to find the path.
 swag init -g ./router/router.go -o ./docs
 ```
 
+## Generate wire service
+
+1. Edit `router/wire.go` and write the initialization of dependency injections.
+
+* Example
+```go
+//go:build wireinject
+// +build wireinject
+
+package router_v1
+
+import (
+	"github.com/google/wire"
+
+	clinic_repository "go-pano/domain/repository/clinic"
+
+	clinic_service "go-pano/domain/service/clinic"
+	"go-pano/utils"
+)
+
+func initClinicService() clinic_service.IClinicService {
+	wire.Build(
+		clinic_service.NewClinicService,
+		clinic_repository.NewClinicRepository,
+		utils.NewDBInstance,
+	)
+	return nil
+}
+```
+
+2. When you added the relationship of each class, run command `wire <relative_path>.`.
+
+```bash
+# I put the wire.go files in router folder. 
+wire ./router/.
+```
+
+3. Add the functions of dependency injections where you want.
+
+```go
+package router_v1
+
+import (
+	"github.com/gin-gonic/gin"
+	"go-pano/domain/delivery/http"
+)
+
+func NewRouter(app *gin.Engine) {
+
+	api := app.Group("/api")
+	{
+		// CLINIC，使用wire
+		http.NewClinicHandler(api, initClinicService())
+
+	}
+
+}
+
+```
+
 ## Use Protocol Buffers
 
 Generate all pb files.

@@ -22,6 +22,8 @@ func NewClinicHandler(e *gin.RouterGroup, s clinic_service.IClinicService) {
 
 	// router
 	clinic := e.Group("/clinic")
+	clinic.Use(utils.JWTAuthMiddleware())
+	// TODO RBAC
 	{
 		clinic.GET("", handler.Get)
 		clinic.POST("", handler.Create)

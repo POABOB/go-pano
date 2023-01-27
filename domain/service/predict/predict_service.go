@@ -39,6 +39,10 @@ type IRequestPredictService interface {
 	GrpcReq(string, string) (*model.Result, error)
 }
 
+func NewRequestPredictService() IRequestPredictService {
+	return &RequestPredictService{}
+}
+
 type RequestPredictService struct {
 }
 

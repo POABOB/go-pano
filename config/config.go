@@ -27,7 +27,8 @@ type ServerConfig struct {
 	StaticDir string `yaml:"static_dir"`
 	// ViewDir            string `yaml:"view_dir"`
 	// UploadDir          string `yaml:"upload_dir"`
-	MaxMultipartMemory int64 `yaml:"max_multipart_memory"`
+	MaxMultipartMemory int64  `yaml:"max_multipart_memory"`
+	Secret             string `yaml:"secret"`
 }
 
 // DatabaseConfig is the database config

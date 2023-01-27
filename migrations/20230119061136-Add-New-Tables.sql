@@ -32,6 +32,7 @@ ALTER TABLE `Predict` CHANGE `filename` `filename` varchar(128) not null DEFAULT
 ALTER TABLE `Predict` CHANGE `predict_string` `predict_string` varchar(1024) not null DEFAULT '' COMMENT '辨識';
 ALTER TABLE `Predict` CHANGE `created_at` `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '新增時間';
 ALTER TABLE `Predict` CHANGE `updated_at` `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新時間';
+ALTER TABLE `Predict` CHANGE `dir` `dir` varchar(64) not null DEFAULT '' COMMENT '檔案資料夾';
 
 
 CREATE INDEX `Clinic_index_0` ON `Clinic` (`start_at`);

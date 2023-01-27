@@ -4,6 +4,7 @@ package model
 type Predict struct {
 	PredictId int    `gorm:"primaryKey" json:"predict_id"`
 	ClinicId  int    ` json:"clinic_id"`
+	Dir       string ` json:"dir"`
 	Filename  string ` json:"filename"`
 	// JSON不要顯示，但是要存入DB
 	PredictString string `json:"-"`
