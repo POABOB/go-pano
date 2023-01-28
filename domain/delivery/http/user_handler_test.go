@@ -47,7 +47,14 @@ func (usm *UserServiceMock) UpdatePassword(user *model.UserPasswordForm) error {
 	return args.Error(0)
 }
 
+func (usm *UserServiceMock) Login(user *model.UserLoginForm) (string, error) {
+	args := usm.Called(user)
+	return args.Get(0).(string), args.Error(1)
+}
+
 func TestUserHandler(test *testing.T) {
+	// 100年
+	jwtToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJuYW1lIjoiQURNSU4iLCJyb2xlcyI6WyJhZG1pbiJdLCJleHAiOjQ4Mjg0ODI4MDAsImlzcyI6Imdpbi1nby1zZXJ2ZXIifQ.O7rDIkQ8eo7VOevkzKgXmfLoMKUYuRwVRg5t12JyImg"
 
 	// Get()
 	test.Run("成功：Get()，獲取所有使用者。", func(test *testing.T) {
@@ -75,6 +82,7 @@ func TestUserHandler(test *testing.T) {
 		// Request
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("GET", "/api/user", nil)
+		req.Header.Set("Authorization", "Bearer "+jwtToken)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 200, w.Code)
@@ -97,6 +105,7 @@ func TestUserHandler(test *testing.T) {
 		// Request
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("GET", "/api/user", nil)
+		req.Header.Set("Authorization", "Bearer "+jwtToken)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 200, w.Code)
@@ -119,6 +128,7 @@ func TestUserHandler(test *testing.T) {
 		// Request
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("GET", "/api/user", nil)
+		req.Header.Set("Authorization", "Bearer "+jwtToken)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 400, w.Code)
@@ -159,6 +169,7 @@ func TestUserHandler(test *testing.T) {
 		// Request Body
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("POST", "/api/user", body)
+		req.Header.Set("Authorization", "Bearer "+jwtToken)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 200, w.Code)
@@ -187,6 +198,7 @@ func TestUserHandler(test *testing.T) {
 		// Request Body
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("POST", "/api/user", body)
+		req.Header.Set("Authorization", "Bearer "+jwtToken)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 400, w.Code)
@@ -215,6 +227,7 @@ func TestUserHandler(test *testing.T) {
 		// Request Body
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("POST", "/api/user", body)
+		req.Header.Set("Authorization", "Bearer "+jwtToken)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 400, w.Code)
@@ -257,6 +270,7 @@ func TestUserHandler(test *testing.T) {
 		// Request Body
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("POST", "/api/user", body)
+		req.Header.Set("Authorization", "Bearer "+jwtToken)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 400, w.Code)
@@ -293,6 +307,7 @@ func TestUserHandler(test *testing.T) {
 		// Request Body
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("PUT", "/api/user", body)
+		req.Header.Set("Authorization", "Bearer "+jwtToken)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 200, w.Code)
@@ -319,6 +334,7 @@ func TestUserHandler(test *testing.T) {
 		// Request Body
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("PUT", "/api/user", body)
+		req.Header.Set("Authorization", "Bearer "+jwtToken)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 400, w.Code)
@@ -344,6 +360,7 @@ func TestUserHandler(test *testing.T) {
 		// Request Body
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("PUT", "/api/user", body)
+		req.Header.Set("Authorization", "Bearer "+jwtToken)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 400, w.Code)
@@ -380,6 +397,7 @@ func TestUserHandler(test *testing.T) {
 		// Request Body
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("PUT", "/api/user", body)
+		req.Header.Set("Authorization", "Bearer "+jwtToken)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 400, w.Code)
@@ -414,6 +432,7 @@ func TestUserHandler(test *testing.T) {
 		// Request Body
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("PATCH", "/api/user/password", body)
+		req.Header.Set("Authorization", "Bearer "+jwtToken)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 200, w.Code)
@@ -439,6 +458,7 @@ func TestUserHandler(test *testing.T) {
 		// Request Body
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("PATCH", "/api/user/password", body)
+		req.Header.Set("Authorization", "Bearer "+jwtToken)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 400, w.Code)
@@ -462,6 +482,7 @@ func TestUserHandler(test *testing.T) {
 		// Request Body
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("PATCH", "/api/user/password", body)
+		req.Header.Set("Authorization", "Bearer "+jwtToken)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 400, w.Code)
@@ -485,6 +506,7 @@ func TestUserHandler(test *testing.T) {
 		// Request Body
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("PATCH", "/api/user/password", body)
+		req.Header.Set("Authorization", "Bearer "+jwtToken)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 400, w.Code)
@@ -519,10 +541,120 @@ func TestUserHandler(test *testing.T) {
 		// Request Body
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("PATCH", "/api/user/password", body)
+		req.Header.Set("Authorization", "Bearer "+jwtToken)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 400, w.Code)
 		assert.Equal(test, string(expected), w.Body.String())
 		usm.AssertExpectations(test)
+	})
+
+	// Login()
+	test.Run("成功：Login()，登入取得Token。", func(test *testing.T) {
+		usm := new(UserServiceMock)
+
+		// 轉成返回格式
+		var jsonObject = &model.UserLoginForm{
+			Account:  "user1",
+			Password: "ppaass",
+		}
+
+		// Mock router
+		usm.On("Login", jsonObject).Return("token123456", nil)
+		router := gin.Default()
+		NewUserHandler(router.Group("/api"), usm)
+
+		// Mock Body
+		jsonBody := []byte(`{
+			"account": "user1",
+			"password": "ppaass"
+		}`)
+		body := bytes.NewReader(jsonBody)
+
+		// Request Body
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest("POST", "/api/login", body)
+		router.ServeHTTP(w, req)
+
+		assert.Equal(test, 200, w.Code)
+		assert.Equal(test, string([]byte(`{"status":true,"msg":"登入成功","data":{"token":"token123456"}}`)), w.Body.String())
+		usm.AssertExpectations(test)
+	})
+
+	test.Run("失敗：Login()，登入帳密錯誤。", func(test *testing.T) {
+		usm := new(UserServiceMock)
+
+		// 轉成返回格式
+		var jsonObject = &model.UserLoginForm{
+			Account:  "user1",
+			Password: "ppaass",
+		}
+
+		// Mock router
+		usm.On("Login", jsonObject).Return("", errors.New("帳號或密碼錯誤"))
+		router := gin.Default()
+		NewUserHandler(router.Group("/api"), usm)
+
+		// Mock Body
+		jsonBody := []byte(`{
+			"account": "user1",
+			"password": "ppaass"
+		}`)
+		body := bytes.NewReader(jsonBody)
+
+		// Request Body
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest("POST", "/api/login", body)
+		router.ServeHTTP(w, req)
+
+		assert.Equal(test, 400, w.Code)
+		assert.Equal(test, string([]byte(`{"status":false,"msg":"帳號或密碼錯誤","data":null}`)), w.Body.String())
+		usm.AssertExpectations(test)
+	})
+
+	test.Run("失敗：Login()，Body格式有誤。", func(test *testing.T) {
+		usm := new(UserServiceMock)
+
+		// Mock router
+		router := gin.Default()
+		NewUserHandler(router.Group("/api"), usm)
+
+		// Mock Body
+		jsonBody := []byte(`{
+			"account": "user1",
+			"password": "ppaass",
+		}`)
+		body := bytes.NewReader(jsonBody)
+
+		// Request Body
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest("POST", "/api/login", body)
+		router.ServeHTTP(w, req)
+
+		assert.Equal(test, 400, w.Code)
+		assert.Equal(test, string([]byte(`{"status":false,"msg":"invalid character '}' looking for beginning of object key string","data":null}`)), w.Body.String())
+	})
+
+	test.Run("失敗：Login()，登入表單空白。", func(test *testing.T) {
+		usm := new(UserServiceMock)
+
+		// Mock router
+		router := gin.Default()
+		NewUserHandler(router.Group("/api"), usm)
+
+		// Mock Body
+		jsonBody := []byte(`{
+			"account": "",
+			"password": ""
+		}`)
+		body := bytes.NewReader(jsonBody)
+
+		// Request Body
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest("POST", "/api/login", body)
+		router.ServeHTTP(w, req)
+
+		assert.Equal(test, 400, w.Code)
+		assert.Equal(test, string([]byte(`{"status":false,"msg":"Key: 'UserLoginForm.Account' Error:Field validation for 'Account' failed on the 'required' tag\nKey: 'UserLoginForm.Password' Error:Field validation for 'Password' failed on the 'required' tag","data":null}`)), w.Body.String())
 	})
 }

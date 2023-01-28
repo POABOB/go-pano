@@ -15,6 +15,9 @@ import (
 // @version 1.0
 // @description Swagger API.
 // @host localhost
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 func NewRouter(app *gin.Engine) {
 
 	api := app.Group("/api")

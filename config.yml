@@ -6,7 +6,7 @@ server:
   # view_dir: ./view
   # upload_dir: ./storage
   max_multipart_memory: 50
-  secret: "Zj^D!t'd:b*1EuPluV?/v1jK@A}HC@m65i8e$-+"r!,5n'S3{Tq@QrWGO9;Y<L4"
+  secret: Zj^D!t'd:b*1EuPluV?/v1jK@A}HC@m65i8e$-+"r!,5n'S3{Tq@QrWGO9;Y<L4
 
 python:
   dev_host: 127.0.0.1

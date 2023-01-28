@@ -48,6 +48,8 @@ func (csm *ClinicServiceMock) UpdateToken(c *model.ClinicTokenForm) error {
 }
 
 func TestClinicHandler(test *testing.T) {
+	// 100年
+	jwtToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJuYW1lIjoiQURNSU4iLCJyb2xlcyI6WyJhZG1pbiJdLCJleHAiOjQ4Mjg0ODI4MDAsImlzcyI6Imdpbi1nby1zZXJ2ZXIifQ.O7rDIkQ8eo7VOevkzKgXmfLoMKUYuRwVRg5t12JyImg"
 
 	// Get
 	test.Run("成功：Get()，獲取所有診所。", func(test *testing.T) {
@@ -78,6 +80,7 @@ func TestClinicHandler(test *testing.T) {
 		// Request
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("GET", "/api/clinic", nil)
+		req.Header.Set("Authorization", "Bearer "+jwtToken)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 200, w.Code)
@@ -100,6 +103,7 @@ func TestClinicHandler(test *testing.T) {
 		// Request
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("GET", "/api/clinic", nil)
+		req.Header.Set("Authorization", "Bearer "+jwtToken)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 200, w.Code)
@@ -122,6 +126,7 @@ func TestClinicHandler(test *testing.T) {
 		// Request
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("GET", "/api/clinic", nil)
+		req.Header.Set("Authorization", "Bearer "+jwtToken)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 400, w.Code)
@@ -158,6 +163,7 @@ func TestClinicHandler(test *testing.T) {
 		// Request Body
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("POST", "/api/clinic", body)
+		req.Header.Set("Authorization", "Bearer "+jwtToken)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 200, w.Code)
@@ -184,6 +190,7 @@ func TestClinicHandler(test *testing.T) {
 		// Request Body
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("POST", "/api/clinic", body)
+		req.Header.Set("Authorization", "Bearer "+jwtToken)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 400, w.Code)
@@ -210,6 +217,7 @@ func TestClinicHandler(test *testing.T) {
 		// Request Body
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("POST", "/api/clinic", body)
+		req.Header.Set("Authorization", "Bearer "+jwtToken)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 400, w.Code)
@@ -248,6 +256,7 @@ func TestClinicHandler(test *testing.T) {
 		// Request Body
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("POST", "/api/clinic", body)
+		req.Header.Set("Authorization", "Bearer "+jwtToken)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 400, w.Code)
@@ -290,6 +299,7 @@ func TestClinicHandler(test *testing.T) {
 		// Request Body
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("PUT", "/api/clinic", body)
+		req.Header.Set("Authorization", "Bearer "+jwtToken)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 200, w.Code)
@@ -317,6 +327,7 @@ func TestClinicHandler(test *testing.T) {
 		// Request Body
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("PUT", "/api/clinic", body)
+		req.Header.Set("Authorization", "Bearer "+jwtToken)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 400, w.Code)
@@ -343,6 +354,7 @@ func TestClinicHandler(test *testing.T) {
 		// Request Body
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("PUT", "/api/clinic", body)
+		req.Header.Set("Authorization", "Bearer "+jwtToken)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 400, w.Code)
@@ -370,6 +382,7 @@ func TestClinicHandler(test *testing.T) {
 		// Request Body
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("PUT", "/api/clinic", body)
+		req.Header.Set("Authorization", "Bearer "+jwtToken)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 400, w.Code)
@@ -412,6 +425,7 @@ func TestClinicHandler(test *testing.T) {
 		// Request Body
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("PUT", "/api/clinic", body)
+		req.Header.Set("Authorization", "Bearer "+jwtToken)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 400, w.Code)
@@ -440,6 +454,7 @@ func TestClinicHandler(test *testing.T) {
 		// Request Body
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("PATCH", "/api/clinic/token", body)
+		req.Header.Set("Authorization", "Bearer "+jwtToken)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 200, w.Code)
@@ -461,6 +476,7 @@ func TestClinicHandler(test *testing.T) {
 		// Request Body
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("PATCH", "/api/clinic/token", body)
+		req.Header.Set("Authorization", "Bearer "+jwtToken)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 400, w.Code)
@@ -480,6 +496,7 @@ func TestClinicHandler(test *testing.T) {
 		// Request Body
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("PATCH", "/api/clinic/token", body)
+		req.Header.Set("Authorization", "Bearer "+jwtToken)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 400, w.Code)
@@ -508,6 +525,7 @@ func TestClinicHandler(test *testing.T) {
 		// Request Body
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("PATCH", "/api/clinic/token", body)
+		req.Header.Set("Authorization", "Bearer "+jwtToken)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 400, w.Code)

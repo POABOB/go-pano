@@ -4,6 +4,7 @@ package model
 // User model
 type User struct {
 	UserUpdateForm
+	Password string `gorm:"<-" json:"-" swaggerignore:"true"`
 }
 
 // 新增User表單
@@ -32,6 +33,16 @@ type UserPasswordForm struct {
 	UserId   int    `gorm:"primaryKey" json:"user_id" binding:"required,max=11" example:"1"`
 	Password string `gorm:"<-" json:"password" binding:"required,max=1024,eqfield=Passconf" example:"password"` // 只能創建和更新
 	Passconf string `gorm:"-:all" json:"passconf" binding:"required" example:"password"`                        // 不對DB做任何事
+}
+
+// 登入表單
+type UserLoginForm struct {
+	Account  string `json:"account" binding:"required,max=64" example:"user"`
+	Password string `gorm:"<-:false" json:"password" binding:"required,max=1024" example:"password"`
+}
+
+type UserToken struct {
+	Token string `json:"token"`
 }
 
 // TableName for gorm

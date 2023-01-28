@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"go-pano/domain/model"
 	user_repository "go-pano/domain/repository/user"
+	"go-pano/utils"
 )
 
 // interface
@@ -13,6 +14,7 @@ type IUserService interface {
 	Create(*model.UserCreateForm) error
 	Update(*model.UserUpdateForm) error
 	UpdatePassword(*model.UserPasswordForm) error
+	Login(*model.UserLoginForm) (string, error)
 }
 
 // 實例化
@@ -82,4 +84,25 @@ func (us *UserService) UpdatePassword(user *model.UserPasswordForm) error {
 	}
 
 	return nil
+}
+
+func (us *UserService) Login(user *model.UserLoginForm) (string, error) {
+	result, err := us.UserRepository.Login(user)
+	if err != nil {
+		return "", err
+	}
+
+	// 將string轉[]string
+	var p []string
+	if err := json.Unmarshal([]byte(result.RolesString), &p); err != nil {
+		fmt.Println(err.Error())
+		return "", err
+	}
+	result.Roles = p
+	result.RolesString = ""
+
+	// 簽發Token
+	tokenString, _ := utils.GenToken(result.UserId, result.Name, result.Roles)
+
+	return tokenString, nil
 }

@@ -43,6 +43,11 @@ func (urm *UserRepositoryMock) UpdatePassword(user *model.UserPasswordForm) erro
 	return args.Error(0)
 }
 
+func (urm *UserRepositoryMock) Login(user *model.UserLoginForm) (*model.User, error) {
+	args := urm.Called(user)
+	return args.Get(0).(*model.User), args.Error(1)
+}
+
 func TestUserService(test *testing.T) {
 	// GetAll()
 	test.Run("成功：GetAll()，成功從Repository獲取資料。", func(test *testing.T) {
@@ -298,4 +303,81 @@ func TestUserService(test *testing.T) {
 		assert.EqualError(test, err, errorString)
 		urm.AssertExpectations(test)
 	})
+
+	// Login()
+	test.Run("成功：Login()，成功從Repository獲取登入資料。", func(test *testing.T) {
+		urm := new(UserRepositoryMock)
+
+		jsonObject := &model.UserLoginForm{
+			Account:  "user1",
+			Password: "ppaass",
+		}
+		// Mock funcs
+		user := &model.User{
+			UserUpdateForm: model.UserUpdateForm{
+				UserId:      1,
+				Name:        "User1",
+				Account:     "user1",
+				RolesString: `["admin"]`,
+				Status:      1,
+			},
+			Password: "hashpassword",
+		}
+		urm.On("Login", jsonObject).Return(user, nil)
+
+		// 將Ｍock注入真的Service
+		UserService := NewUserService(urm)
+		token, err := UserService.Login(jsonObject)
+		assert.NoError(test, err)
+		assert.NotEmpty(test, token)
+		urm.AssertExpectations(test)
+	})
+
+	test.Run("失敗：Login()，帳號或密碼錯誤。", func(test *testing.T) {
+		urm := new(UserRepositoryMock)
+
+		jsonObject := &model.UserLoginForm{
+			Account:  "user1",
+			Password: "ppaass",
+		}
+		// Mock funcs
+		user := &model.User{}
+		urm.On("Login", jsonObject).Return(user, errors.New("帳號或密碼錯誤"))
+
+		// 將Ｍock注入真的Service
+		UserService := NewUserService(urm)
+		token, err := UserService.Login(jsonObject)
+		assert.EqualError(test, err, "帳號或密碼錯誤")
+		assert.Empty(test, token)
+		urm.AssertExpectations(test)
+	})
+
+	test.Run("失敗：Login()，[]string轉Roles失敗。", func(test *testing.T) {
+		urm := new(UserRepositoryMock)
+
+		jsonObject := &model.UserLoginForm{
+			Account:  "user1",
+			Password: "ppaass",
+		}
+		// Mock funcs
+		user := &model.User{
+			UserUpdateForm: model.UserUpdateForm{
+				UserId:      1,
+				Name:        "User1",
+				Account:     "user1",
+				RolesString: `["admin"`,
+				Status:      1,
+			},
+			Password: "hashpassword",
+		}
+		urm.On("Login", jsonObject).Return(user, nil)
+
+		// 將Ｍock注入真的Service
+		UserService := NewUserService(urm)
+		token, err := UserService.Login(jsonObject)
+		assert.EqualError(test, err, "unexpected end of JSON input")
+		assert.Empty(test, token)
+		urm.AssertExpectations(test)
+	})
+
 }

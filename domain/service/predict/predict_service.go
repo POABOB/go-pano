@@ -102,6 +102,7 @@ func (ps *PredictService) Upload(clinicId int, ctx *gin.Context) (*model.Predict
 	predict.PredictString = result.Predict
 	predict.CreatedAt = timeString
 	predict.UpdatedAt = timeString
+	predict.Dir = time_dir
 
 	// 插入DB
 	predictWithId, err := ps.PredictRepository.Create(predict)

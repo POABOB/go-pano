@@ -95,6 +95,8 @@ definitions:
         type: integer
       created_at:
         type: string
+      dir:
+        type: string
       filename:
         type: string
       predict:
@@ -224,6 +226,20 @@ definitions:
     - password
     - roles
     type: object
+  model.UserLoginForm:
+    properties:
+      account:
+        example: user
+        maxLength: 64
+        type: string
+      password:
+        example: password
+        maxLength: 1024
+        type: string
+    required:
+    - account
+    - password
+    type: object
   model.UserPasswordForm:
     properties:
       passconf:
@@ -243,6 +259,11 @@ definitions:
     - passconf
     - password
     - user_id
+    type: object
+  model.UserToken:
+    properties:
+      token:
+        type: string
     type: object
   model.UserUpdateForm:
     properties:
@@ -324,6 +345,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/utils.IH500'
+      security:
+      - BearerAuth: []
       summary: 獲取所有診所
       tags:
       - Clinic
@@ -349,6 +372,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/utils.IH500'
+      security:
+      - BearerAuth: []
       summary: 新增診所
       tags:
       - Clinic
@@ -374,6 +399,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/utils.IH500'
+      security:
+      - BearerAuth: []
       summary: 更新診所資訊
       tags:
       - Clinic
@@ -400,9 +427,42 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/utils.IH500'
+      security:
+      - BearerAuth: []
       summary: 更新診所Token
       tags:
       - Clinic
+  /api/login:
+    post:
+      consumes:
+      - application/json
+      operationId: "11"
+      parameters:
+      - description: body
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserLoginForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.IH200'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.UserToken'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.IH500'
+      summary: 使用者登入
+      tags:
+      - User
   /api/predict:
     post:
       operationId: "1"
@@ -459,6 +519,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/utils.IH500'
+      security:
+      - BearerAuth: []
       summary: 獲取所有使用者
       tags:
       - User
@@ -484,6 +546,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/utils.IH500'
+      security:
+      - BearerAuth: []
       summary: 新增使用者
       tags:
       - User
@@ -509,6 +573,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/utils.IH500'
+      security:
+      - BearerAuth: []
       summary: 更新使用者資訊
       tags:
       - User
@@ -535,7 +601,42 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/utils.IH500'
-      summary: 更新使用者密碼
+      security:
+      - BearerAuth: []
+      summary: 更新其他使用者密碼
       tags:
       - User
+  /api/user/password/self:
+    patch:
+      consumes:
+      - application/json
+      operationId: "12"
+      parameters:
+      - description: body
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserPasswordForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.IH200'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.IH500'
+      security:
+      - BearerAuth: []
+      summary: 更新自己的密碼
+      tags:
+      - User
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

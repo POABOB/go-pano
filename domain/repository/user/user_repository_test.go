@@ -16,6 +16,7 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -279,5 +280,97 @@ func TestUserRepository(test *testing.T) {
 			})
 
 		assert.EqualError(test, err, "有錯誤發生")
+	})
+
+	// Login()
+	test.Run("成功：Login，登入比對無誤。", func(test *testing.T) {
+		encrypted, _ := bcrypt.GenerateFromPassword([]byte("password"), bcrypt.DefaultCost)
+		s.mock.ExpectQuery(regexp.QuoteMeta(
+			"SELECT * FROM `Users` WHERE account=? ORDER BY `Users`.`user_id` LIMIT 1")).
+			WithArgs(getUser[0].Account).
+			WillReturnRows(sqlmock.NewRows([]string{"user_id", "name", "account", "roles_string", "status", "password"}).
+				AddRow(getUser[0].UserId,
+					getUser[0].Name,
+					getUser[0].Account,
+					getUser[0].RolesString,
+					getUser[0].Status,
+					string(encrypted),
+				))
+
+		res, err := s.repository.Login(&model.UserLoginForm{
+			Account:  getUser[0].Account,
+			Password: "password",
+		})
+
+		assert.NoError(test, err)
+		assert.True(test, reflect.DeepEqual(&model.User{
+			UserUpdateForm: model.UserUpdateForm{
+				UserId:      1,
+				Name:        "User1",
+				Account:     "user1",
+				RolesString: `["admin"]`,
+				Status:      1,
+			},
+			Password: string(encrypted),
+		}, res))
+	})
+
+	test.Run("失敗：Login，沒有找到資料。", func(test *testing.T) {
+		s.mock.ExpectQuery(regexp.QuoteMeta(
+			"SELECT * FROM `Users` WHERE account=? ORDER BY `Users`.`user_id` LIMIT 1")).
+			WithArgs().
+			WillReturnRows(sqlmock.NewRows([]string{"user_id", "name", "account", "roles_string", "status", "password"}))
+
+		res, err := s.repository.Login(&model.UserLoginForm{
+			Account:  getUser[0].Account,
+			Password: "password",
+		})
+
+		assert.EqualError(test, err, "帳號或密碼錯誤")
+		assert.True(test, reflect.DeepEqual(&model.User{}, res))
+	})
+
+	test.Run("失敗：Login，密碼不符合。", func(test *testing.T) {
+		encrypted, _ := bcrypt.GenerateFromPassword([]byte("password"), bcrypt.DefaultCost)
+		s.mock.ExpectQuery(regexp.QuoteMeta(
+			"SELECT * FROM `Users` WHERE account=? ORDER BY `Users`.`user_id` LIMIT 1")).
+			WithArgs(getUser[0].Account).
+			WillReturnRows(sqlmock.NewRows([]string{"user_id", "name", "account", "roles_string", "status", "password"}).
+				AddRow(getUser[0].UserId,
+					getUser[0].Name,
+					getUser[0].Account,
+					getUser[0].RolesString,
+					getUser[0].Status,
+					string(encrypted),
+				))
+		res, err := s.repository.Login(&model.UserLoginForm{
+			Account:  getUser[0].Account,
+			Password: "password1",
+		})
+
+		assert.EqualError(test, err, "帳號或密碼錯誤")
+		assert.True(test, reflect.DeepEqual(&model.User{}, res))
+	})
+
+	test.Run("失敗：Login，停用狀態。", func(test *testing.T) {
+		encrypted, _ := bcrypt.GenerateFromPassword([]byte("password"), bcrypt.DefaultCost)
+		s.mock.ExpectQuery(regexp.QuoteMeta(
+			"SELECT * FROM `Users` WHERE account=? ORDER BY `Users`.`user_id` LIMIT 1")).
+			WithArgs(getUser[0].Account).
+			WillReturnRows(sqlmock.NewRows([]string{"user_id", "name", "account", "roles_string", "status", "password"}).
+				AddRow(getUser[0].UserId,
+					getUser[0].Name,
+					getUser[0].Account,
+					getUser[0].RolesString,
+					0,
+					string(encrypted),
+				))
+		res, err := s.repository.Login(&model.UserLoginForm{
+			Account:  getUser[0].Account,
+			Password: "password",
+		})
+
+		assert.EqualError(test, err, "該帳號已被停用")
+		assert.True(test, reflect.DeepEqual(&model.User{}, res))
 	})
 }

@@ -1,6 +1,7 @@
 package user_repository
 
 import (
+	"errors"
 	"go-pano/domain/model"
 	"go-pano/utils"
 
@@ -13,6 +14,7 @@ type IUserRepository interface {
 	Update(*model.UserUpdateForm) error
 	Create(*model.UserCreateForm) error
 	UpdatePassword(*model.UserPasswordForm) error
+	Login(*model.UserLoginForm) (*model.User, error)
 }
 
 // gorm使用參考
@@ -69,4 +71,21 @@ func (ctrl *UserRepository) UpdatePassword(user *model.UserPasswordForm) error {
 	}
 
 	return nil
+}
+
+func (ctrl *UserRepository) Login(userForm *model.UserLoginForm) (*model.User, error) {
+	user := &model.User{}
+	if err := ctrl.mysql.DB().Where("account=?", userForm.Account).First(&user).Error; err != nil {
+		return &model.User{}, errors.New("帳號或密碼錯誤")
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(userForm.Password)); err != nil {
+		return &model.User{}, errors.New("帳號或密碼錯誤")
+	}
+
+	if user.Status == 0 {
+		return &model.User{}, errors.New("該帳號已被停用")
+	}
+
+	return user, nil
 }

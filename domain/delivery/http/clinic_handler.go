@@ -3,6 +3,7 @@ package http
 import (
 	"go-pano/domain/model"
 	clinic_service "go-pano/domain/service/clinic"
+	"go-pano/middleware"
 	"go-pano/utils"
 
 	"github.com/gin-gonic/gin"
@@ -22,7 +23,7 @@ func NewClinicHandler(e *gin.RouterGroup, s clinic_service.IClinicService) {
 
 	// router
 	clinic := e.Group("/clinic")
-	clinic.Use(utils.JWTAuthMiddleware())
+	clinic.Use(middleware.JWTAuthMiddleware())
 	// TODO RBAC
 	{
 		clinic.GET("", handler.Get)
@@ -43,6 +44,7 @@ type ClinicHandler struct {
 // @version 1.0
 // @accept application/json
 // @produce application/json
+// @Security BearerAuth
 // @Success 200 {object} utils.IH200{data=[]model.Clinic} "診所"
 // @Failure 500 {object} utils.IH500
 // @Router /api/clinic [get]
@@ -62,6 +64,7 @@ func (ch *ClinicHandler) Get(ctx *gin.Context) {
 // @version 1.0
 // @accept application/json
 // @produce application/json
+// @Security BearerAuth
 // @param data body model.ClinicCreateForm true "body"
 // @Success 200 {object} utils.IH200
 // @Failure 500 {object} utils.IH500
@@ -94,6 +97,7 @@ func (ch *ClinicHandler) Create(ctx *gin.Context) {
 // @version 1.0
 // @accept application/json
 // @produce application/json
+// @Security BearerAuth
 // @param data body model.ClinicUpdateForm true "body"
 // @Success 200 {object} utils.IH200
 // @Failure 500 {object} utils.IH500
@@ -126,6 +130,7 @@ func (ch *ClinicHandler) Update(ctx *gin.Context) {
 // @version 1.0
 // @accept application/json
 // @produce application/json
+// @Security BearerAuth
 // @param data body model.ClinicTokenForm true "body"
 // @Success 200 {object} utils.IH200
 // @Failure 500 {object} utils.IH500
