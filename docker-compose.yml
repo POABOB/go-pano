@@ -5,7 +5,7 @@ services:
     build: ./dist/python
     container_name: pano-python
     volumes:
-      - ./dist/static:/app/go/static
+      - ./static:/app/go/static
     ports:
       - 5001:5001
   pano-go:

@@ -1,6 +1,8 @@
 FROM python:3.9.15-slim-bullseye
 LABEL mantainer="POABOB <zxc752166@gmail.com>"
 
+ENV TZ="Asia/Taipei"
+
 RUN apt-get -qq update \
     && apt-get -qq install -y --no-install-recommends \
     build-essential \

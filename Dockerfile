@@ -9,7 +9,8 @@ ENV GO111MODULE=auto \
     GOOS=linux \
     GOARCH=amd64 \
     GOPATH=/app \
-    PATH="$PATH:/app/bin/linux_amd64/"
+    PATH="$PATH:/app/bin/linux_amd64/" \
+    TZ="Asia/Taipei"
 
 # 指定工作目錄
 WORKDIR /app/go/
@@ -24,7 +25,8 @@ RUN go mod download \
     && go install github.com/google/wire/cmd/wire@latest \
     && go install github.com/codegangsta/gin \
     && go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28 \
-    && go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
+    && go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2 \
+    && apk add --no-cache tzdata
 
 # 暴露端口
 EXPOSE 80
@@ -56,6 +58,10 @@ RUN go mod tidy \
 
 # Deploy Stage
 FROM alpine:3.16.2 AS prod
+
+RUN apk add --no-cache tzdata
+
+ENV TZ="Asia/Taipei"
 
 # 指定工作目錄
 WORKDIR /app/go/

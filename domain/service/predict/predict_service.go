@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"os"
 	"time"
 
 	"go-pano/config"
@@ -95,6 +96,7 @@ func (ps *PredictService) Upload(clinicId int, ctx *gin.Context) (*model.Predict
 	// Python gRPC
 	result, err := ps.RequestPredictService.GrpcReq(time_dir, config.PythonHost+":5001")
 	if err != nil {
+		os.RemoveAll(base_dir)
 		return &model.Predict{}, err
 	}
 
@@ -107,6 +109,7 @@ func (ps *PredictService) Upload(clinicId int, ctx *gin.Context) (*model.Predict
 	// 插入DB
 	predictWithId, err := ps.PredictRepository.Create(predict)
 	if err != nil {
+		os.RemoveAll(base_dir)
 		return &model.Predict{}, err
 	}
 

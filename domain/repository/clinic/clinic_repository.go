@@ -29,6 +29,12 @@ type ClinicRepository struct {
 func (ctrl *ClinicRepository) GetAll() ([]model.Clinic, error) {
 	clinic := []model.Clinic{}
 	if err := ctrl.mysql.DB().Table("Clinic").
+		// TODO 關聯 並且Predict還要跟Record JOIN
+		// 時間範圍：https://www.geeksforgeeks.org/time-time-date-function-in-golang-with-examples/?ref=rp
+		// Preload("Predict", func(db *gorm.DB) *gorm.DB {
+		// 	db = db.Order("predict_id DESC").Limit(10000)
+		// 	return db
+		// }).
 		Select("clinic_id", "SUBSTR(start_at,1,10) AS start_at", "SUBSTR(end_at,1,10) AS end_at", "name", "quota_per_month", "token").
 		Limit(500).Find(&clinic).Error; err != nil {
 		return []model.Clinic{}, err

@@ -10,8 +10,8 @@ server:
   secret: Zj^D!t'd:b*1EuPluV?/v1jK@A}HC@m65i8e$-+"r!,5n'S3{Tq@QrWGO9;Y<L4
 
 python:
-  dev_host: 127.0.0.1
-  test_host: 127.0.0.1
+  dev_host: pano-python
+  test_host: pano-python
   prod_host: pano-python
 
 database-in-docker:
