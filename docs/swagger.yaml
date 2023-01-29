@@ -12,6 +12,10 @@ definitions:
         example: 診所
         maxLength: 128
         type: string
+      predict:
+        items:
+          $ref: '#/definitions/model.Predict'
+        type: array
       quota_per_month:
         example: 200
         maximum: 100000
@@ -315,6 +319,31 @@ definitions:
         default: false
         type: boolean
     type: object
+  utils.MyClaims:
+    properties:
+      aud:
+        type: string
+      exp:
+        type: integer
+      iat:
+        type: integer
+      iss:
+        type: string
+      jti:
+        type: string
+      name:
+        type: string
+      nbf:
+        type: integer
+      roles:
+        items:
+          type: string
+        type: array
+      sub:
+        type: string
+      user_id:
+        type: integer
+    type: object
 host: localhost
 info:
   contact: {}
@@ -576,6 +605,32 @@ paths:
       security:
       - BearerAuth: []
       summary: 更新使用者資訊
+      tags:
+      - User
+  /api/user/info:
+    get:
+      consumes:
+      - application/json
+      operationId: "13"
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.IH200'
+            - properties:
+                data:
+                  $ref: '#/definitions/utils.MyClaims'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.IH500'
+      security:
+      - BearerAuth: []
+      summary: 使用者JWT資訊
       tags:
       - User
   /api/user/password:

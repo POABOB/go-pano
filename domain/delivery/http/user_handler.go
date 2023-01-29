@@ -16,6 +16,7 @@ type IUserHandler interface {
 	Update(ctx *gin.Context)
 	UpdatePassword(ctx *gin.Context)
 	Login(ctx *gin.Context)
+	GetUserInfo(ctx *gin.Context)
 	// TODO hard delete
 	// Delete(ctx *gin.Context)
 }
@@ -30,6 +31,7 @@ func NewUserHandler(e *gin.RouterGroup, s user_service.IUserService) {
 	user.Use(middleware.JWTAuthMiddleware())
 	// TODO RBAC
 	{
+		user.GET("/info", handler.GetUserInfo)
 		user.GET("", handler.Get)
 		user.POST("", handler.Create)
 		user.PUT("", handler.Update)
@@ -186,4 +188,24 @@ func (uh *UserHandler) Login(ctx *gin.Context) {
 	}
 
 	ctx.JSON(200, utils.H200(model.UserToken{Token: token}, "登入成功"))
+}
+
+// @Summary 使用者JWT資訊
+// @Id 13
+// @Tags User
+// @version 1.0
+// @accept application/json
+// @produce application/json
+// @Security BearerAuth
+// @Success 200 {object} utils.IH200{data=utils.MyClaims}
+// @Failure 500 {object} utils.IH500
+// @Router /api/user/info [get]
+func (uh *UserHandler) GetUserInfo(ctx *gin.Context) {
+	claims, exists := ctx.Get("jwtClaims")
+	if !exists {
+		ctx.JSON(400, utils.H500("invalid token"))
+		return
+	}
+
+	ctx.JSON(200, utils.H200(claims, ""))
 }

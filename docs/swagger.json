@@ -429,6 +429,52 @@
                 }
             }
         },
+        "/api/user/info": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "使用者JWT資訊",
+                "operationId": "13",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/utils.IH200"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/utils.MyClaims"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.IH500"
+                        }
+                    }
+                }
+            }
+        },
         "/api/user/password": {
             "patch": {
                 "security": [
@@ -545,6 +591,12 @@
                     "type": "string",
                     "maxLength": 128,
                     "example": "診所"
+                },
+                "predict": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Predict"
+                    }
                 },
                 "quota_per_month": {
                     "type": "integer",
@@ -951,6 +1003,44 @@
                 "status": {
                     "type": "boolean",
                     "default": false
+                }
+            }
+        },
+        "utils.MyClaims": {
+            "type": "object",
+            "properties": {
+                "aud": {
+                    "type": "string"
+                },
+                "exp": {
+                    "type": "integer"
+                },
+                "iat": {
+                    "type": "integer"
+                },
+                "iss": {
+                    "type": "string"
+                },
+                "jti": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "nbf": {
+                    "type": "integer"
+                },
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "sub": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
                 }
             }
         }

@@ -14,7 +14,18 @@ type MyClaims struct {
 	UserId int      `json:"user_id"`
 	Name   string   `json:"name"`
 	Roles  []string `json:"roles"`
-	jwt.StandardClaims
+	StandardClaims
+}
+
+// 原本官方有，但是swaggo抓不到，所以就自行建立一個
+type StandardClaims struct {
+	Audience  string `json:"aud,omitempty"`
+	ExpiresAt int64  `json:"exp,omitempty"`
+	Id        string `json:"jti,omitempty"`
+	IssuedAt  int64  `json:"iat,omitempty"`
+	Issuer    string `json:"iss,omitempty"`
+	NotBefore int64  `json:"nbf,omitempty"`
+	Subject   string `json:"sub,omitempty"`
 }
 
 // ７天的使用期限
@@ -30,7 +41,7 @@ func GenToken(userId int, name string, roles []string) (string, error) {
 		userId,
 		name,
 		roles,
-		jwt.StandardClaims{
+		StandardClaims{
 			ExpiresAt: time.Now().Add(TokenExpireDuration).Unix(), // 過期日
 			Issuer:    "gin-go-server",                            // 簽發人
 		},
@@ -52,4 +63,8 @@ func ParseToken(tokenString string) (*MyClaims, error) {
 		return claims, nil
 	}
 	return nil, errors.New("invalid token")
+}
+
+func (c MyClaims) Valid() error {
+	return nil
 }
