@@ -1,0 +1,13 @@
+**/.git
+**/.DS_Store
+
+# 裡面有存放開發環境留下來的volume
+**/dist
+
+*.log
+Dockerfile*
+docker-compose*
+.dockerignore
+.git
+.gitignore
+.vscode

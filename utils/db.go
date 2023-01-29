@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"go-pano/config"
+	"go-pano/domain/model"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
@@ -61,6 +62,11 @@ func dbInit() *gorm.DB {
 	if err != nil {
 		log.Fatal().Err(err).Msg("Cannot connect to database")
 	}
+
+	// db.AutoMigrate(&User{}, &Product{}, &Order{})
+
+	// Add table suffix when creating tables
+	db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&model.User{}, &model.Predict{}, &model.Clinic{})
 
 	stdDB, _ := db.DB()
 	stdDB.SetMaxIdleConns(config.Database.MaxIdleConns)

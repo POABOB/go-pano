@@ -2,16 +2,17 @@ package model
 
 // Predict model
 type Predict struct {
-	PredictId int    `gorm:"primaryKey" json:"predict_id"`
-	ClinicId  int    ` json:"clinic_id"`
-	Dir       string ` json:"dir"`
-	Filename  string ` json:"filename"`
+	PredictId int    `gorm:"column:predict_id;primaryKey;not null;autoIncrement;comment:辨識ID" json:"predict_id"`
+	ClinicId  int    `gorm:"column:clinic_id;not null;index:idx_predict_clinic_id;comment:診所ID" json:"clinic_id"`
+	Clinic    Clinic // 外鍵
+	Dir       string `gorm:"column:dir;size:64;not null;comment:檔案目錄" json:"dir"`
+	Filename  string `gorm:"column:filename;size:128;not null;index:idx_predict_filename;comment:檔案名稱" json:"filename"`
 	// JSON不要顯示，但是要存入DB
-	PredictString string `json:"-"`
+	PredictString string `gorm:"column:predict_string;size:1024;not null;comment:辨識結果" json:"-"`
 	// JSON要顯示，但是不要存入DB
 	Predict   []PredictDetail `gorm:"-:all" json:"predict"`
-	CreatedAt string          `json:"created_at"`
-	UpdatedAt string          `json:"updated_at"`
+	CreatedAt string          `gorm:"column:created_at;size:20;not null;index:idx_predict_created_at;comment:建立日期" json:"created_at"`
+	UpdatedAt string          `gorm:"column:updated_at;size:20;not null;index:idx_predict_updated_at;comment:更新日期" json:"updated_at"`
 }
 
 type PredictDetail struct {

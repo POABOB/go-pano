@@ -25,7 +25,7 @@ type ServerConfig struct {
 	Mode      string
 	Version   string
 	StaticDir string `yaml:"static_dir"`
-	// ViewDir            string `yaml:"view_dir"`
+	PublicDir string `yaml:"public_dir"`
 	// UploadDir          string `yaml:"upload_dir"`
 	MaxMultipartMemory int64  `yaml:"max_multipart_memory"`
 	Secret             string `yaml:"secret"`

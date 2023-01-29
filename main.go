@@ -5,6 +5,7 @@ import (
 	"go-pano/config"
 	router_v1 "go-pano/router"
 
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 )
 
@@ -28,6 +29,9 @@ func main() {
 	// 靜態檔案
 	app.Static("/static", config.Server.StaticDir)
 	app.Static("/docs", "./docs")
+
+	// Vue App
+	app.Use(static.Serve("/", static.LocalFile(config.Server.PublicDir, false)))
 
 	// 配置檔案上傳大小
 	app.MaxMultipartMemory = config.Server.MaxMultipartMemory << 20

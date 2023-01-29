@@ -3,6 +3,7 @@ server:
   addr: :80
   mode: test
   static_dir: ../../../static
+  public_dir: ./public
   # view_dir: ./view
   # upload_dir: ./storage
   max_multipart_memory: 50
@@ -23,7 +24,7 @@ database-in-docker:
 
 database:
   dialect: mysql
-  datasource: pano:ppaannoo@tcp(localhost:3306)/pano?charset=utf8mb4&timeout=10s&parseTime=True
+  datasource: pano:ppaannoo@tcp(mysql:3306)/pano?charset=utf8mb4&timeout=10s&parseTime=True
   dir: migrations
   table: migrations
   max_idle_conns: 2

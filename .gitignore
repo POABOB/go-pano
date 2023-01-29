@@ -13,3 +13,7 @@ docker-compose-prod.yml
 config-prod.yml
 
 classifier-6.pt
+
+config.yml
+
+gin-bin

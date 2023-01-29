@@ -1,61 +1,23 @@
 # Gin-Framework
 
-
 ## Dev Configuration
 
-### 1. Run Docker Service
+### Run Docker Service
 
 ```
 docker-compose up
 ```
 
-### 2. Wait for mysql & migrate the DB schema
+## SQL init
 
-**Create the database first**
+If you are the first time starting this project, just use below sql commands to login.
 
+```sql
+INSERT INTO `Users` (`user_id`, `name`, `account`, `password`, `roles_string`, `status`) VALUES
+(1, 'ADMIN', '__pano_admin__', '$2a$10$94v4wlp6ZRanI6Xv1k4hyePZJlTJf.o08fSUqPby/mABlGGgRiRAa', '[\"admin\"]', 1);
+INSERT INTO `Clinic` (`clinic_id`, `name`, `start_at`, `end_at`, `quota_per_month`, `token`) VALUES
+(1, '測試診所', '2022-10-10', '2099-12-31', 200, 'rHsxKe6qPxxoZJh2oPJPk2mVzNFB5XmfOnkLpCwvbhnOnbU9i3');
 ```
-./migrate.sh new DB
-```
-
-**Write down your db sql in migrations file**
-
-```
-
--- +migrate Up
--- 新增pano DB
-CREATE DATABASE IF NOT EXISTS `pano` DEFAULT CHARACTER SET utf8mb4;
-
--- +migrate Down
--- DROP DATABASE `pano`;
-
-```
-
-**Migrates the database to the most recent version available**
-
-```
-./migrate.sh up
-```
-
-#### Others 
-
-**Undo a database migration**
-
-```
-./migrate.sh down
-```
-
-**Show migration status**
-
-```
-./migrate.sh status
-```
-
-**Create a new migration**
-
-```
-./migrate.sh new a_new_migration
-```
-
 
 
 ## Prod Configuration
@@ -68,6 +30,7 @@ server:
   addr: :80
   mode: prod
   static_dir: ./static
+  public_dir: ./public
   # view_dir: ./view
   # upload_dir: ./storage
   max_multipart_memory: 50
@@ -87,7 +50,7 @@ database-in-docker:
 
 database:
   dialect: mysql
-  datasource: pano:ppaannoo@tcp(localhost:3306)/pano?charset=utf8mb4&timeout=10s&parseTime=True
+  datasource: <user>:<password>@tcp(mysql:3306)/pano?charset=utf8mb4&timeout=10s&parseTime=True
   dir: migrations
   table: migrations
   max_idle_conns: 2
@@ -95,43 +58,47 @@ database:
 ```
 
 
-### 2. Copy docker-compose.yml to Copy docker-compose-prod.yml & change the config of mysql
+### 2. Copy docker-compose.yml to Copy docker-compose-prod.yml, change the config of mysql, and chang the target of pano-go service.
 
 ```yml
 version: "3"
 services:
   pano-python:
+    image: poabob/pano-python:prod-1.0.0
     build: ./dist/python
     container_name: pano-python
     volumes:
       - ./dist/static:/app/go/static
     ports:
-      - 5000:5000
+      - 5001:5001
   pano-go:
-    build: .
+    image: poabob/pano-go:prod-1.0.0
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      target: prod
     container_name: pano-go
     volumes:
-      - ./dist/python:/python
       - ./dist/log:/app/go/log
       - ./dist/static:/app/go/static
+      - ./dist/public:/app/go/public
     depends_on:
       - mysql
     ports:
       - 80:80
   mysql:
-    image: cap1573/mysql:5.6
+    image: mariadb:10.9
     container_name: mysql
     restart: always
     environment:
-      MYSQL_DATABASE: "pano"
-      MYSQL_USER: <user>
-      MYSQL_PASSWORD: <password>
+      MYSQL_DATABASE: "<DB>"
+      MYSQL_USER: "<user>"
+      MYSQL_PASSWORD: "<password>"
       MYSQL_RANDOM_ROOT_PASSWORD: true
     ports:
       - "3306:3306"
     volumes:
       - ./dist/mysql:/var/lib/mysql
-
 ```
 
 ### 3. Start the service
@@ -140,18 +107,17 @@ services:
 docker-compose -f docker-compose-prod.yml up
 ```
 
-### 4. Wait for mysql & migrate the DB schema
-
-```
-./migrate.sh up
-```
 
 ## Generate swag document
 
 All comments were written in router/router.go, so you need to find the path.
 
 ```
-swag init -g ./router/router.go -o ./docs
+# In Docker
+docker exec pano-go swag init -g ./router/router_v1.go -o ./docs
+
+# In real mechine
+swag init -g ./router/router_v1.go -o ./docs
 ```
 
 ## Generate wire service
@@ -187,7 +153,10 @@ func initClinicService() clinic_service.IClinicService {
 2. When you added the relationship of each class, run command `wire <relative_path>.`.
 
 ```bash
-# I put the wire.go files in router folder. 
+# In Docker
+docker exec pano-go wire ./router/.
+
+# In real mechine
 wire ./router/.
 ```
 
@@ -208,8 +177,8 @@ func NewRouter(app *gin.Engine) {
 		// After
 		http.NewClinicHandler(api, initClinicService())
 
-    // Before
-    // cr := clinic_repository.NewClinicRepository(db)
+        // Before
+        // cr := clinic_repository.NewClinicRepository(db)
 		// cs := clinic_service.NewClinicService(cr)
 		// http.NewClinicHandler(api, cs)
 
@@ -224,26 +193,31 @@ func NewRouter(app *gin.Engine) {
 Generate all pb files.
 
 ```
+# In Docker
+docker exec pano-go protoc ./protos/*/*.proto  --go_out=plugins=grpc:. --go_opt=paths=source_relative
+
+# In real mechine
 protoc ./protos/*/*.proto  --go_out=plugins=grpc:. --go_opt=paths=source_relative
 ```
 
-## Problems
+## Furture Table
 
-1. If there is a error when you migrated.
+```sql
+CREATE TABLE IF NOT EXISTS `Record` (
+  `record_id` int PRIMARY KEY AUTO_INCREMENT COMMENT '紀錄ID',
+  `clinic_id` int DEFAULT 0 COMMENT '診所ID',
+  `predict_id` int DEFAULT 0 COMMENT '預測ID',
+  `score` int NOT NULL DEFAULT 80 COMMENT '準確度',
+  `comment` varchar(1024) NOT NULL DEFAULT "" COMMENT '準確度評論'
+)ENGINE = InnoDB DEFAULT CHARSET=utf8mb4;
 ```
-poabob@gengyingxiangdeMacBook-Pro go-pano % ./migrate.sh up    
-/Users/poabob/go/bin/sql-migrate up -config=config.yml -env=database
-Migration failed: Error 1146: Table 'pano.clinic' doesn't exist handling 20230119061136-Add-New-Tables.sql
-```
-> Just restart the container of mysql. It will be fixed.
 
 ## TODO
 
 - Write down the real process
 - Finish Predict Unit Tests
 - User RBAC control
-- Clinic Manage API
-  - Clinic Token Request
+- Clinic Token Request
 - Record API
   - services used per month every clinic
   - services score list

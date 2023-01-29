@@ -1,6 +1,7 @@
 version: "3"
 services:
   pano-python:
+    image: poabob/pano-python:prod-1.0.0
     build: ./dist/python
     container_name: pano-python
     volumes:
@@ -8,12 +9,15 @@ services:
     ports:
       - 5001:5001
   pano-go:
-    build: .
+    image: poabob/pano-go:dev-1.0.0
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      target: dev
     container_name: pano-go
     volumes:
-      - ./dist/python:/python
-      - ./dist/log:/app/go/log
-      - ./dist/static:/app/go/static
+      - .:/app/go/
+      # - 
     depends_on:
       - mysql
     ports:
