@@ -15,6 +15,7 @@ type IClinicHandler interface {
 	Create(ctx *gin.Context)
 	Update(ctx *gin.Context)
 	UpdateToken(ctx *gin.Context)
+	Delete(ctx *gin.Context)
 }
 
 // 實例化
@@ -30,6 +31,7 @@ func NewClinicHandler(e *gin.RouterGroup, s clinic_service.IClinicService) {
 		clinic.POST("", handler.Create)
 		clinic.PUT("", handler.Update)
 		clinic.PATCH("/token", handler.UpdateToken)
+		clinic.DELETE("", handler.Delete)
 	}
 }
 
@@ -149,4 +151,31 @@ func (ch *ClinicHandler) UpdateToken(ctx *gin.Context) {
 	}
 
 	ctx.JSON(200, utils.H200(nil, "更新成功"))
+}
+
+// @Summary	刪除診所
+// @Id 15
+// @Tags Clinic
+// @version 1.0
+// @accept application/json
+// @produce application/json
+// @Security BearerAuth
+// @param data body model.ClinicTokenForm true "body"
+// @Success 200 {object} utils.IH200
+// @Failure 500 {object} utils.IH500
+// @Router /api/clinic [delete]
+func (ch *ClinicHandler) Delete(ctx *gin.Context) {
+	// 表單驗證
+	var clinicForm model.ClinicTokenForm
+	if err := ctx.ShouldBindJSON(&clinicForm); err != nil {
+		ctx.JSON(400, utils.H500(err.Error()))
+		return
+	}
+
+	if err := ch.ClinicService.Delete(&clinicForm); err != nil {
+		ctx.JSON(400, utils.H500(err.Error()))
+		return
+	}
+
+	ctx.JSON(200, utils.H200(nil, "刪除成功"))
 }

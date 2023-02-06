@@ -11,6 +11,7 @@ type IClinicRepository interface {
 	Update(*model.ClinicUpdateForm) error
 	Create(*model.ClinicCreateForm, string) error
 	UpdateToken(*model.ClinicTokenForm, string) error
+	Delete(*model.ClinicTokenForm) error
 }
 
 // gorm使用參考
@@ -36,7 +37,7 @@ func (ctrl *ClinicRepository) GetAll() ([]model.Clinic, error) {
 		// 	return db
 		// }).
 		Select("clinic_id", "SUBSTR(start_at,1,10) AS start_at", "SUBSTR(end_at,1,10) AS end_at", "name", "quota_per_month", "token").
-		Limit(500).Find(&clinic).Error; err != nil {
+		Limit(500).Where("deleted = ?", 0).Find(&clinic).Error; err != nil {
 		return []model.Clinic{}, err
 	}
 
@@ -71,6 +72,17 @@ func (ctrl *ClinicRepository) Update(clinic *model.ClinicUpdateForm) error {
 // 更新Token
 func (ctrl *ClinicRepository) UpdateToken(clinic *model.ClinicTokenForm, token string) error {
 	if db := ctrl.mysql.DB().Table("Clinic").Where("clinic_id = ?", clinic.ClinicId).Update("token", token); db.Error != nil {
+		return db.Error
+	} else if db.RowsAffected == 0 {
+		return utils.ErrFailed
+	}
+
+	return nil
+}
+
+// 刪除診所
+func (ctrl *ClinicRepository) Delete(clinic *model.ClinicTokenForm) error {
+	if db := ctrl.mysql.DB().Table("Clinic").Where("clinic_id = ?", clinic.ClinicId).Update("deleted", 1); db.Error != nil {
 		return db.Error
 	} else if db.RowsAffected == 0 {
 		return utils.ErrFailed

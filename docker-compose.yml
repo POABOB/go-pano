@@ -1,15 +1,18 @@
 version: "3"
 services:
   pano-python:
-    image: poabob/pano-python:prod-1.0.0
+    image: poabob/pano-python:prod-1.0.1
+    restart: always
     build: ./dist/python
     container_name: pano-python
     volumes:
+      - ./dist/python:/python
       - ./static:/app/go/static
     ports:
       - 5001:5001
   pano-go:
     image: poabob/pano-go:dev-1.0.0
+    restart: always
     build: 
       context: .
       dockerfile: Dockerfile
@@ -22,6 +25,15 @@ services:
       - mysql
     ports:
       - 80:80
+  # redis:
+  #   image: redis:6.2-alpine
+  #   container_name: redis
+  #   restart: always
+  #   ports:
+  #     - '6379:6379'
+  #   command: redis-server --save 60 1 --loglevel warning --requirepass ppaannoo
+  #   volumes: 
+  #     - ./dist/redis:/data
   mysql:
     image: mariadb:10.9
     container_name: mysql
@@ -37,6 +49,7 @@ services:
       - ./dist/mysql:/var/lib/mysql
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
+    restart: always
     ports:
       - "8080:80"
     depends_on:

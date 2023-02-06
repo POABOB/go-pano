@@ -141,6 +141,49 @@
                         }
                     }
                 }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Clinic"
+                ],
+                "summary": "刪除診所",
+                "operationId": "15",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ClinicTokenForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.IH200"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.IH500"
+                        }
+                    }
+                }
             }
         },
         "/api/clinic/token": {
@@ -177,58 +220,6 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/utils.IH200"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/utils.IH500"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/login": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "summary": "使用者登入",
-                "operationId": "11",
-                "parameters": [
-                    {
-                        "description": "body",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.UserLoginForm"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/utils.IH200"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/model.UserToken"
-                                        }
-                                    }
-                                }
-                            ]
                         }
                     },
                     "500": {
@@ -357,8 +348,8 @@
                 "tags": [
                     "User"
                 ],
-                "summary": "更新使用者資訊",
-                "operationId": "4",
+                "summary": "更新使用者帳號資訊",
+                "operationId": "15",
                 "parameters": [
                     {
                         "description": "body",
@@ -366,7 +357,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.UserUpdateForm"
+                            "$ref": "#/definitions/model.UserUpdateAccountForm"
                         }
                     }
                 ],
@@ -427,6 +418,81 @@
                         }
                     }
                 }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "刪除使用者",
+                "operationId": "14",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.IH200"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.IH500"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "更新使用者資訊",
+                "operationId": "4",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.UserUpdateForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.IH200"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.IH500"
+                        }
+                    }
+                }
             }
         },
         "/api/user/info": {
@@ -460,6 +526,58 @@
                                     "properties": {
                                         "data": {
                                             "$ref": "#/definitions/utils.MyClaims"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.IH500"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/login": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "使用者登入",
+                "operationId": "11",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.UserLoginForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/utils.IH200"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.UserToken"
                                         }
                                     }
                                 }
@@ -582,6 +700,11 @@
                     "type": "integer",
                     "maximum": 11,
                     "example": 1
+                },
+                "deleted": {
+                    "type": "integer",
+                    "maximum": 1,
+                    "example": 0
                 },
                 "end_at": {
                     "type": "string",
@@ -912,6 +1035,12 @@
                 "user_id"
             ],
             "properties": {
+                "oldpass": {
+                    "description": "只能創建和更新",
+                    "type": "string",
+                    "maxLength": 1024,
+                    "example": "old_password"
+                },
                 "passconf": {
                     "description": "不對DB做任何事",
                     "type": "string",
@@ -938,11 +1067,10 @@
                 }
             }
         },
-        "model.UserUpdateForm": {
+        "model.UserUpdateAccountForm": {
             "type": "object",
             "required": [
                 "account",
-                "name",
                 "roles",
                 "user_id"
             ],
@@ -951,11 +1079,6 @@
                     "type": "string",
                     "maxLength": 64,
                     "example": "user"
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 64,
-                    "example": "User"
                 },
                 "roles": {
                     "type": "array",
@@ -971,6 +1094,25 @@
                     "type": "integer",
                     "maximum": 11,
                     "example": 1
+                },
+                "user_id": {
+                    "type": "integer",
+                    "maximum": 11,
+                    "example": 1
+                }
+            }
+        },
+        "model.UserUpdateForm": {
+            "type": "object",
+            "required": [
+                "name",
+                "user_id"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "maxLength": 64,
+                    "example": "User"
                 },
                 "user_id": {
                     "type": "integer",
@@ -1051,5 +1193,19 @@
             "name": "Authorization",
             "in": "header"
         }
-    }
+    },
+    "tags": [
+        {
+            "description": "後台介面 - 使用者Api",
+            "name": "User"
+        },
+        {
+            "description": "後台介面 - 診所Api",
+            "name": "Clinic"
+        },
+        {
+            "description": "診所端 - 辨識Api",
+            "name": "Predict"
+        }
+    ]
 }

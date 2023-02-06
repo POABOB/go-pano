@@ -9,10 +9,11 @@ log/*
 dist/static/img/*
 dist/log/*
 dist/mysql
+dist/redis
 docker-compose-prod.yml
 config-prod.yml
 
-classifier-6.pt
+*.pt
 
 config.yml
 

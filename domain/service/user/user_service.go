@@ -13,8 +13,10 @@ type IUserService interface {
 	Get() ([]model.User, error)
 	Create(*model.UserCreateForm) error
 	Update(*model.UserUpdateForm) error
-	UpdatePassword(*model.UserPasswordForm) error
+	UpdateAccount(*model.UserUpdateAccountForm) error
+	UpdatePassword(*model.UserPasswordForm, string) error
 	Login(*model.UserLoginForm) (string, error)
+	Delete(*model.UserDeleteForm) error
 }
 
 // 實例化
@@ -64,13 +66,6 @@ func (us *UserService) Create(user *model.UserCreateForm) error {
 }
 
 func (us *UserService) Update(user *model.UserUpdateForm) error {
-	// Roles to RolesString
-	jsonString, err := json.Marshal(user.Roles)
-	if err != nil {
-		return err
-	}
-	user.RolesString = string(jsonString)
-
 	if err := us.UserRepository.Update(user); err != nil {
 		return err
 	}
@@ -78,8 +73,23 @@ func (us *UserService) Update(user *model.UserUpdateForm) error {
 	return nil
 }
 
-func (us *UserService) UpdatePassword(user *model.UserPasswordForm) error {
-	if err := us.UserRepository.UpdatePassword(user); err != nil {
+func (us *UserService) UpdateAccount(user *model.UserUpdateAccountForm) error {
+	// Roles to RolesString
+	jsonString, err := json.Marshal(user.Roles)
+	if err != nil {
+		return err
+	}
+	user.RolesString = string(jsonString)
+
+	if err := us.UserRepository.UpdateAccount(user); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (us *UserService) UpdatePassword(user *model.UserPasswordForm, obj string) error {
+	if err := us.UserRepository.UpdatePassword(user, obj); err != nil {
 		return err
 	}
 
@@ -105,4 +115,12 @@ func (us *UserService) Login(user *model.UserLoginForm) (string, error) {
 	tokenString, _ := utils.GenToken(result.UserId, result.Name, result.Roles)
 
 	return tokenString, nil
+}
+
+func (us *UserService) Delete(user *model.UserDeleteForm) error {
+	if err := us.UserRepository.Delete(user); err != nil {
+		return err
+	}
+
+	return nil
 }

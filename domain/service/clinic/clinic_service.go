@@ -12,6 +12,7 @@ type IClinicService interface {
 	Create(*model.ClinicCreateForm) error
 	Update(*model.ClinicUpdateForm) error
 	UpdateToken(*model.ClinicTokenForm) error
+	Delete(*model.ClinicTokenForm) error
 }
 
 // 實例化
@@ -53,6 +54,14 @@ func (cs *ClinicService) Update(clinic *model.ClinicUpdateForm) error {
 func (cs *ClinicService) UpdateToken(clinic *model.ClinicTokenForm) error {
 	// 自動產生TOKEN
 	if err := cs.ClinicRepository.UpdateToken(clinic, utils.RandStringRunes(50)); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (cs *ClinicService) Delete(clinic *model.ClinicTokenForm) error {
+	if err := cs.ClinicRepository.Delete(clinic); err != nil {
 		return err
 	}
 

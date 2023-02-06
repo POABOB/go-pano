@@ -43,6 +43,11 @@ func (rm *ClinicRepositoryMock) UpdateToken(clinic *model.ClinicTokenForm, token
 	return args.Error(0)
 }
 
+func (rm *ClinicRepositoryMock) Delete(clinic *model.ClinicTokenForm) error {
+	args := rm.Called(clinic)
+	return args.Error(0)
+}
+
 func TestClinicService(test *testing.T) {
 	// GetAll
 	test.Run("成功：GetAll()，成功從Repository獲取資料。", func(test *testing.T) {

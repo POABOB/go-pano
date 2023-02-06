@@ -15,9 +15,20 @@ import (
 // @version 1.0
 // @description Swagger API.
 // @host localhost
+
 // @securityDefinitions.apikey BearerAuth
 // @in header
 // @name Authorization
+
+// @tag.name User
+// @tag.description 後台介面 - 使用者Api
+
+// @tag.name Clinic
+// @tag.description 後台介面 - 診所Api
+
+// @tag.name Predict
+// @tag.description 診所端 - 辨識Api
+
 func NewRouter(app *gin.Engine) {
 
 	api := app.Group("/api")

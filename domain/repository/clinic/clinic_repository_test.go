@@ -121,8 +121,8 @@ func TestClinicRepository(test *testing.T) {
 	test.Run("成功：Create成功插入。", func(test *testing.T) {
 		s.mock.ExpectBegin()
 		s.mock.ExpectExec(
-			regexp.QuoteMeta("INSERT INTO `Clinic` (`name`,`start_at`,`end_at`,`quota_per_month`,`token`) VALUES (?,?,?,?,?)")).
-			WithArgs(getClinic[0].Name, getClinic[0].StartAt, getClinic[0].EndAt, getClinic[0].QuotaPerMonth, sqlmock.AnyArg()).
+			regexp.QuoteMeta("INSERT INTO `Clinic` (`name`,`start_at`,`end_at`,`quota_per_month`,`token`,`deleted`) VALUES (?,?,?,?,?,?)")).
+			WithArgs(getClinic[0].Name, getClinic[0].StartAt, getClinic[0].EndAt, getClinic[0].QuotaPerMonth, sqlmock.AnyArg(), 0).
 			WillReturnResult(sqlmock.NewResult(1, 1))
 		s.mock.ExpectCommit()
 
@@ -140,8 +140,8 @@ func TestClinicRepository(test *testing.T) {
 	test.Run("失敗：Create，有錯誤發生。", func(test *testing.T) {
 		s.mock.ExpectBegin()
 		s.mock.ExpectExec(
-			regexp.QuoteMeta("INSERT INTO `Clinic` (`name`,`start_at`,`end_at`,`quota_per_month`,`token`) VALUES (?,?,?,?,?)")).
-			WithArgs(getClinic[0].Name, getClinic[0].StartAt, getClinic[0].EndAt, getClinic[0].QuotaPerMonth, sqlmock.AnyArg()).
+			regexp.QuoteMeta("INSERT INTO `Clinic` (`name`,`start_at`,`end_at`,`quota_per_month`,`token`,`deleted`) VALUES (?,?,?,?,?,?)")).
+			WithArgs(getClinic[0].Name, getClinic[0].StartAt, getClinic[0].EndAt, getClinic[0].QuotaPerMonth, sqlmock.AnyArg(), 0).
 			WillReturnError(errors.New("有錯誤發生"))
 		s.mock.ExpectRollback()
 		err := s.repository.Create(&model.ClinicCreateForm{

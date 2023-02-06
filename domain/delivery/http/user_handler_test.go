@@ -42,14 +42,24 @@ func (usm *UserServiceMock) Update(user *model.UserUpdateForm) error {
 	return args.Error(0)
 }
 
-func (usm *UserServiceMock) UpdatePassword(user *model.UserPasswordForm) error {
+func (usm *UserServiceMock) UpdateAccount(user *model.UserUpdateAccountForm) error {
 	args := usm.Called(user)
+	return args.Error(0)
+}
+
+func (usm *UserServiceMock) UpdatePassword(user *model.UserPasswordForm, obj string) error {
+	args := usm.Called(user, obj)
 	return args.Error(0)
 }
 
 func (usm *UserServiceMock) Login(user *model.UserLoginForm) (string, error) {
 	args := usm.Called(user)
 	return args.Get(0).(string), args.Error(1)
+}
+
+func (usm *UserServiceMock) Delete(user *model.UserDeleteForm) error {
+	args := usm.Called(user)
+	return args.Error(0)
 }
 
 func TestUserHandler(test *testing.T) {
@@ -63,9 +73,9 @@ func TestUserHandler(test *testing.T) {
 		// 轉成返回格式
 		var jsonObject = []model.User{
 			{
-				UserUpdateForm: model.UserUpdateForm{
+				Name: "User1",
+				UserUpdateAccountForm: model.UserUpdateAccountForm{
 					UserId:  1,
-					Name:    "User1",
 					Account: "user1",
 					Roles:   []string{"admin"},
 					Status:  1,
@@ -284,10 +294,8 @@ func TestUserHandler(test *testing.T) {
 
 		// 轉成返回格式
 		var jsonObject = &model.UserUpdateForm{
-			UserId:  1,
-			Name:    "User1",
-			Account: "user1",
-			Roles:   []string{"index-1", "index-2"},
+			UserId: 1,
+			Name:   "User1",
 		}
 
 		// Mock router
@@ -298,15 +306,13 @@ func TestUserHandler(test *testing.T) {
 		// Mock Body
 		jsonBody := []byte(`{
 			"user_id":  1,
-			"name": "User1",
-			"account": "user1",
-			"roles": ["index-1","index-2"]
+			"name": "User1"
 		}`)
 		body := bytes.NewReader(jsonBody)
 
 		// Request Body
 		w := httptest.NewRecorder()
-		req, _ := http.NewRequest("PUT", "/api/user", body)
+		req, _ := http.NewRequest("PATCH", "/api/user", body)
 		req.Header.Set("Authorization", "Bearer "+jwtToken)
 		router.ServeHTTP(w, req)
 
@@ -351,20 +357,18 @@ func TestUserHandler(test *testing.T) {
 		// Mock Body
 		jsonBody := []byte(`{
 			"user_id":  0,
-			"name": "",
-			"account": "",
-			"roles": []
+			"name": ""
 		}`)
 		body := bytes.NewReader(jsonBody)
 
 		// Request Body
 		w := httptest.NewRecorder()
-		req, _ := http.NewRequest("PUT", "/api/user", body)
+		req, _ := http.NewRequest("PATCH", "/api/user", body)
 		req.Header.Set("Authorization", "Bearer "+jwtToken)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 400, w.Code)
-		assert.Equal(test, string([]byte(`{"status":false,"msg":"Key: 'UserUpdateForm.UserId' Error:Field validation for 'UserId' failed on the 'required' tag\nKey: 'UserUpdateForm.Name' Error:Field validation for 'Name' failed on the 'required' tag\nKey: 'UserUpdateForm.Account' Error:Field validation for 'Account' failed on the 'required' tag","data":null}`)), w.Body.String())
+		assert.Equal(test, string([]byte(`{"status":false,"msg":"Key: 'UserUpdateForm.UserId' Error:Field validation for 'UserId' failed on the 'required' tag\nKey: 'UserUpdateForm.Name' Error:Field validation for 'Name' failed on the 'required' tag","data":null}`)), w.Body.String())
 	})
 
 	test.Run("失敗：Update()，更新使用者，DB有問題。", func(test *testing.T) {
@@ -372,10 +376,8 @@ func TestUserHandler(test *testing.T) {
 
 		// 轉成返回格式
 		var jsonObject = &model.UserUpdateForm{
-			UserId:  1,
-			Name:    "User1",
-			Account: "user1",
-			Roles:   []string{"index-1", "index-2"},
+			UserId: 1,
+			Name:   "User1",
 		}
 		var errorString string = "有錯誤發生"
 		expected, _ := json.Marshal(utils.H500(errorString))
@@ -388,15 +390,13 @@ func TestUserHandler(test *testing.T) {
 		// Mock Body
 		jsonBody := []byte(`{
 			"user_id":  1,
-			"name": "User1",
-			"account": "user1",
-			"roles": ["index-1","index-2"]
+			"name": "User1"
 		}`)
 		body := bytes.NewReader(jsonBody)
 
 		// Request Body
 		w := httptest.NewRecorder()
-		req, _ := http.NewRequest("PUT", "/api/user", body)
+		req, _ := http.NewRequest("PATCH", "/api/user", body)
 		req.Header.Set("Authorization", "Bearer "+jwtToken)
 		router.ServeHTTP(w, req)
 
@@ -417,7 +417,7 @@ func TestUserHandler(test *testing.T) {
 		}
 
 		// Mock router
-		usm.On("UpdatePassword", jsonObject).Return(nil)
+		usm.On("UpdatePassword", jsonObject, "all").Return(nil)
 		router := gin.Default()
 		NewUserHandler(router.Group("/api"), usm)
 
@@ -526,7 +526,7 @@ func TestUserHandler(test *testing.T) {
 		expected, _ := json.Marshal(utils.H500(errorString))
 
 		// Mock router
-		usm.On("UpdatePassword", jsonObject).Return(errors.New(errorString))
+		usm.On("UpdatePassword", jsonObject, "all").Return(errors.New(errorString))
 		router := gin.Default()
 		NewUserHandler(router.Group("/api"), usm)
 
@@ -573,7 +573,7 @@ func TestUserHandler(test *testing.T) {
 
 		// Request Body
 		w := httptest.NewRecorder()
-		req, _ := http.NewRequest("POST", "/api/login", body)
+		req, _ := http.NewRequest("POST", "/api/user/login", body)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 200, w.Code)
@@ -604,7 +604,7 @@ func TestUserHandler(test *testing.T) {
 
 		// Request Body
 		w := httptest.NewRecorder()
-		req, _ := http.NewRequest("POST", "/api/login", body)
+		req, _ := http.NewRequest("POST", "/api/user/login", body)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 400, w.Code)
@@ -628,7 +628,7 @@ func TestUserHandler(test *testing.T) {
 
 		// Request Body
 		w := httptest.NewRecorder()
-		req, _ := http.NewRequest("POST", "/api/login", body)
+		req, _ := http.NewRequest("POST", "/api/user/login", body)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 400, w.Code)
@@ -651,7 +651,7 @@ func TestUserHandler(test *testing.T) {
 
 		// Request Body
 		w := httptest.NewRecorder()
-		req, _ := http.NewRequest("POST", "/api/login", body)
+		req, _ := http.NewRequest("POST", "/api/user/login", body)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(test, 400, w.Code)

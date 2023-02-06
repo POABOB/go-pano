@@ -9,7 +9,9 @@ import json
 import sys
 import os
 
-from flask import Flask, request
+
+from pathlib import Path
+
 from utils.core import main
 
 
@@ -21,7 +23,9 @@ class RPCService(predict_pb2_grpc.PredictServicer):
         Dir = request.Dir
 
         try:
-            tooth_anomaly_dict = main("/app/go/static/img/" + Dir)
+            data_dir = Path("/app/go/static/img/" + Dir)
+            _D = list(data_dir.glob('*.jpg'))
+            tooth_anomaly_dict = main(_D)
 
             text = """Tx:Check Panoramic radiography films for initial examination in this year
             C.F.:

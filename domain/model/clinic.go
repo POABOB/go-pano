@@ -7,6 +7,7 @@ type Clinic struct {
 	ClinicCreateForm `gorm:"embedded"`
 	Predict          []Predict
 	Token            string `gorm:"<-:create;column:token;size:100;not null;index:idx_clinic_token;comment:Token" json:"token" binding:"required,max=1024" example:"token1231324568913"`
+	Deleted          int    `gorm:"<-;column:deleted;type:tinyint(3);default:0;not null;index:idx_clinic_deleted;comment:是否已刪除" json:"deleted" binding:"max=1" example:"0"`
 }
 
 type ClinicTokenForm struct {

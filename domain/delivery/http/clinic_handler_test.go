@@ -47,6 +47,11 @@ func (csm *ClinicServiceMock) UpdateToken(c *model.ClinicTokenForm) error {
 	return args.Error(0)
 }
 
+func (csm *ClinicServiceMock) Delete(c *model.ClinicTokenForm) error {
+	args := csm.Called(c)
+	return args.Error(0)
+}
+
 func TestClinicHandler(test *testing.T) {
 	// 100年
 	jwtToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJuYW1lIjoiQURNSU4iLCJyb2xlcyI6WyJhZG1pbiJdLCJleHAiOjQ4Mjg0ODI4MDAsImlzcyI6Imdpbi1nby1zZXJ2ZXIifQ.O7rDIkQ8eo7VOevkzKgXmfLoMKUYuRwVRg5t12JyImg"

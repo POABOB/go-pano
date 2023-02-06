@@ -5,6 +5,10 @@ definitions:
         example: 1
         maximum: 11
         type: integer
+      deleted:
+        example: 0
+        maximum: 1
+        type: integer
       end_at:
         example: "2099-12-31"
         type: string
@@ -246,6 +250,11 @@ definitions:
     type: object
   model.UserPasswordForm:
     properties:
+      oldpass:
+        description: 只能創建和更新
+        example: old_password
+        maxLength: 1024
+        type: string
       passconf:
         description: 不對DB做任何事
         example: password
@@ -269,14 +278,10 @@ definitions:
       token:
         type: string
     type: object
-  model.UserUpdateForm:
+  model.UserUpdateAccountForm:
     properties:
       account:
         example: user
-        maxLength: 64
-        type: string
-      name:
-        example: User
         maxLength: 64
         type: string
       roles:
@@ -296,8 +301,21 @@ definitions:
         type: integer
     required:
     - account
-    - name
     - roles
+    - user_id
+    type: object
+  model.UserUpdateForm:
+    properties:
+      name:
+        example: User
+        maxLength: 64
+        type: string
+      user_id:
+        example: 1
+        maximum: 11
+        type: integer
+    required:
+    - name
     - user_id
     type: object
   utils.IH200:
@@ -352,6 +370,33 @@ info:
   version: "1.0"
 paths:
   /api/clinic:
+    delete:
+      consumes:
+      - application/json
+      operationId: "15"
+      parameters:
+      - description: body
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.ClinicTokenForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.IH200'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.IH500'
+      security:
+      - BearerAuth: []
+      summary: 刪除診所
+      tags:
+      - Clinic
     get:
       consumes:
       - application/json
@@ -461,37 +506,6 @@ paths:
       summary: 更新診所Token
       tags:
       - Clinic
-  /api/login:
-    post:
-      consumes:
-      - application/json
-      operationId: "11"
-      parameters:
-      - description: body
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/model.UserLoginForm'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/utils.IH200'
-            - properties:
-                data:
-                  $ref: '#/definitions/model.UserToken'
-              type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/utils.IH500'
-      summary: 使用者登入
-      tags:
-      - User
   /api/predict:
     post:
       operationId: "1"
@@ -526,6 +540,26 @@ paths:
       tags:
       - Predict
   /api/user:
+    delete:
+      consumes:
+      - application/json
+      operationId: "14"
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.IH200'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.IH500'
+      security:
+      - BearerAuth: []
+      summary: 刪除使用者
+      tags:
+      - User
     get:
       consumes:
       - application/json
@@ -551,6 +585,33 @@ paths:
       security:
       - BearerAuth: []
       summary: 獲取所有使用者
+      tags:
+      - User
+    patch:
+      consumes:
+      - application/json
+      operationId: "4"
+      parameters:
+      - description: body
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserUpdateForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.IH200'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.IH500'
+      security:
+      - BearerAuth: []
+      summary: 更新使用者資訊
       tags:
       - User
     post:
@@ -583,14 +644,14 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "4"
+      operationId: "15"
       parameters:
       - description: body
         in: body
         name: data
         required: true
         schema:
-          $ref: '#/definitions/model.UserUpdateForm'
+          $ref: '#/definitions/model.UserUpdateAccountForm'
       produces:
       - application/json
       responses:
@@ -604,7 +665,7 @@ paths:
             $ref: '#/definitions/utils.IH500'
       security:
       - BearerAuth: []
-      summary: 更新使用者資訊
+      summary: 更新使用者帳號資訊
       tags:
       - User
   /api/user/info:
@@ -631,6 +692,37 @@ paths:
       security:
       - BearerAuth: []
       summary: 使用者JWT資訊
+      tags:
+      - User
+  /api/user/login:
+    post:
+      consumes:
+      - application/json
+      operationId: "11"
+      parameters:
+      - description: body
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserLoginForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.IH200'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.UserToken'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.IH500'
+      summary: 使用者登入
       tags:
       - User
   /api/user/password:
@@ -695,3 +787,10 @@ securityDefinitions:
     name: Authorization
     type: apiKey
 swagger: "2.0"
+tags:
+- description: 後台介面 - 使用者Api
+  name: User
+- description: 後台介面 - 診所Api
+  name: Clinic
+- description: 診所端 - 辨識Api
+  name: Predict

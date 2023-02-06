@@ -3,6 +3,8 @@ LABEL mantainer="POABOB <zxc752166@gmail.com>"
 
 ENV TZ="Asia/Taipei"
 
+WORKDIR /python/
+
 RUN apt-get -qq update \
     && apt-get -qq install -y --no-install-recommends \
     build-essential \
@@ -33,12 +35,14 @@ RUN apt-get -qq update \
 RUN python3 -m pip install opencv-python-headless  
 
 # requirements
-COPY . /python/
-RUN python3 -m pip install -r /python/requirements.txt --quiet
+# COPY . /python/
+COPY ./requirements.txt /python/requirements.txt
+RUN python3 -m pip install --upgrade pip \
+    && python3 -m pip install -r /python/requirements.txt --quiet
 # RUN touch /usr/local/lib/python3.9/dist-packages/yolov5/requirements.txt
 
 # 暴露端口
 # PYTHON HTTP || GRPC
-WORKDIR /python/
 EXPOSE 5001
 CMD ["python3", "server_grpc.py"]
+# CMD ["python3", "server_redis_stream.py"]

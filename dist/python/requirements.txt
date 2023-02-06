@@ -30,3 +30,5 @@ sahi==0.10.1
 flask
 grpcio
 grpcio-tools
+
+redis

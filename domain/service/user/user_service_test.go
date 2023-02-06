@@ -38,14 +38,24 @@ func (urm *UserRepositoryMock) Update(user *model.UserUpdateForm) error {
 	return args.Error(0)
 }
 
-func (urm *UserRepositoryMock) UpdatePassword(user *model.UserPasswordForm) error {
+func (urm *UserRepositoryMock) UpdateAccount(user *model.UserUpdateAccountForm) error {
 	args := urm.Called(user)
+	return args.Error(0)
+}
+
+func (urm *UserRepositoryMock) UpdatePassword(user *model.UserPasswordForm, obj string) error {
+	args := urm.Called(user, obj)
 	return args.Error(0)
 }
 
 func (urm *UserRepositoryMock) Login(user *model.UserLoginForm) (*model.User, error) {
 	args := urm.Called(user)
 	return args.Get(0).(*model.User), args.Error(1)
+}
+
+func (urm *UserRepositoryMock) Delete(user *model.UserDeleteForm) error {
+	args := urm.Called(user)
+	return args.Error(0)
 }
 
 func TestUserService(test *testing.T) {
@@ -55,9 +65,9 @@ func TestUserService(test *testing.T) {
 
 		jsonObject := []model.User{
 			{
-				UserUpdateForm: model.UserUpdateForm{
+				Name: "User1",
+				UserUpdateAccountForm: model.UserUpdateAccountForm{
 					UserId:      1,
-					Name:        "User1",
 					Account:     "user1",
 					RolesString: `["admin"]`,
 					Status:      1,
@@ -73,9 +83,9 @@ func TestUserService(test *testing.T) {
 		assert.NoError(test, err)
 		assert.Equal(test, expected, []model.User{
 			{
-				UserUpdateForm: model.UserUpdateForm{
+				Name: "User1",
+				UserUpdateAccountForm: model.UserUpdateAccountForm{
 					UserId:  1,
-					Name:    "User1",
 					Account: "user1",
 					Roles:   []string{"admin"},
 					Status:  1,
@@ -122,9 +132,9 @@ func TestUserService(test *testing.T) {
 		jsonString := "unexpected end of JSON input"
 		jsonObject := []model.User{
 			{
-				UserUpdateForm: model.UserUpdateForm{
+				Name: "User1",
+				UserUpdateAccountForm: model.UserUpdateAccountForm{
 					UserId:      1,
-					Name:        "User1",
 					Account:     "user1",
 					RolesString: `["admin"`,
 					Status:      1,
@@ -207,20 +217,13 @@ func TestUserService(test *testing.T) {
 		urm := new(UserRepositoryMock)
 
 		jsonObject := &model.UserUpdateForm{
-			UserId:  1,
-			Name:    "User1",
-			Account: "user1",
-			Roles:   []string{"admin"},
-			Status:  1,
+			UserId: 1,
+			Name:   "User1",
 		}
 		// Mock funcs
 		urm.On("Update", &model.UserUpdateForm{
-			UserId:      1,
-			Name:        "User1",
-			Account:     "user1",
-			RolesString: `["admin"]`,
-			Roles:       []string{"admin"},
-			Status:      1,
+			UserId: 1,
+			Name:   "User1",
 		}).Return(nil)
 
 		// 將Ｍock注入真的Service
@@ -235,20 +238,13 @@ func TestUserService(test *testing.T) {
 
 		errorString := "DB出現錯誤"
 		jsonObject := &model.UserUpdateForm{
-			UserId:  1,
-			Name:    "User1",
-			Account: "user1",
-			Roles:   []string{"admin"},
-			Status:  1,
+			UserId: 1,
+			Name:   "User1",
 		}
 		// Mock funcs
 		urm.On("Update", &model.UserUpdateForm{
-			UserId:      1,
-			Name:        "User1",
-			Account:     "user1",
-			RolesString: `["admin"]`,
-			Roles:       []string{"admin"},
-			Status:      1,
+			UserId: 1,
+			Name:   "User1",
 		}).Return(errors.New(errorString))
 
 		// 將Ｍock注入真的Service
@@ -272,11 +268,11 @@ func TestUserService(test *testing.T) {
 			UserId:   1,
 			Password: "ppaass",
 			Passconf: "ppaass",
-		}).Return(nil)
+		}, "all").Return(nil)
 
 		// 將Ｍock注入真的Service
 		UpdateUserService := NewUserService(urm)
-		err := UpdateUserService.UpdatePassword(jsonObject)
+		err := UpdateUserService.UpdatePassword(jsonObject, "all")
 		assert.NoError(test, err)
 		urm.AssertExpectations(test)
 	})
@@ -295,11 +291,11 @@ func TestUserService(test *testing.T) {
 			UserId:   1,
 			Password: "ppaass",
 			Passconf: "ppaass",
-		}).Return(errors.New(errorString))
+		}, "all").Return(errors.New(errorString))
 
 		// 將Ｍock注入真的Service
 		UpdateUserService := NewUserService(urm)
-		err := UpdateUserService.UpdatePassword(jsonObject)
+		err := UpdateUserService.UpdatePassword(jsonObject, "all")
 		assert.EqualError(test, err, errorString)
 		urm.AssertExpectations(test)
 	})
@@ -314,9 +310,9 @@ func TestUserService(test *testing.T) {
 		}
 		// Mock funcs
 		user := &model.User{
-			UserUpdateForm: model.UserUpdateForm{
+			Name: "User1",
+			UserUpdateAccountForm: model.UserUpdateAccountForm{
 				UserId:      1,
-				Name:        "User1",
 				Account:     "user1",
 				RolesString: `["admin"]`,
 				Status:      1,
@@ -361,9 +357,9 @@ func TestUserService(test *testing.T) {
 		}
 		// Mock funcs
 		user := &model.User{
-			UserUpdateForm: model.UserUpdateForm{
+			Name: "User1",
+			UserUpdateAccountForm: model.UserUpdateAccountForm{
 				UserId:      1,
-				Name:        "User1",
 				Account:     "user1",
 				RolesString: `["admin"`,
 				Status:      1,

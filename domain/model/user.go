@@ -3,8 +3,9 @@ package model
 // 表單驗證 https://pkg.go.dev/github.com/go-playground/validator/v10#section-readme
 // User model
 type User struct {
-	UserUpdateForm `gorm:"embedded"`
-	Password       string `gorm:"<-;column:password;size:1024;index:idx_user_password;comment:密碼" json:"-" swaggerignore:"true"`
+	UserUpdateAccountForm `gorm:"embedded"`
+	Password              string `gorm:"<-;column:password;size:1024;index:idx_user_password;comment:密碼" json:"-" swaggerignore:"true"`
+	Name                  string `gorm:"column:name;size:64;not null;comment:名稱" json:"name" binding:"required,max=64" example:"User"`
 }
 
 // 新增User表單
@@ -20,8 +21,13 @@ type UserCreateForm struct {
 
 // 更新User表單
 type UserUpdateForm struct {
+	UserId int    `gorm:"column:user_id;primaryKey;not null;autoIncrement;comment:使用者ID" json:"user_id" binding:"required,max=11" example:"1"`
+	Name   string `gorm:"column:name;size:64;not null;comment:名稱" json:"name" binding:"required,max=64" example:"User"`
+}
+
+// 更新User帳號表單
+type UserUpdateAccountForm struct {
 	UserId      int      `gorm:"column:user_id;primaryKey;not null;autoIncrement;comment:使用者ID" json:"user_id" binding:"required,max=11" example:"1"`
-	Name        string   `gorm:"column:name;size:64;not null;comment:名稱" json:"name" binding:"required,max=64" example:"User"`
 	Account     string   `gorm:"column:account;size:64;not null;unique;comment:帳號" json:"account" binding:"required,max=64" example:"user"`
 	RolesString string   `gorm:"column:roles_string;size:512;not null;default:[];comment:權限" json:"-" swaggerignore:"true"`
 	Roles       []string `gorm:"-:all" json:"roles" binding:"required,max=1024" example:"admin"`
@@ -31,6 +37,7 @@ type UserUpdateForm struct {
 // 更新Password表單
 type UserPasswordForm struct {
 	UserId   int    `gorm:"primaryKey" json:"user_id" binding:"required,max=11" example:"1"`
+	OldPass  string `gorm:"-:all" json:"oldpass" binding:"max=1024" example:"old_password"`                     // 只能創建和更新
 	Password string `gorm:"<-" json:"password" binding:"required,max=1024,eqfield=Passconf" example:"password"` // 只能創建和更新
 	Passconf string `gorm:"-:all" json:"passconf" binding:"required" example:"password"`                        // 不對DB做任何事
 }
@@ -41,8 +48,13 @@ type UserLoginForm struct {
 	Password string `gorm:"<-:false" json:"password" binding:"required,max=1024" example:"password"`
 }
 
+// 刪除表單
+type UserDeleteForm struct {
+	UserId int `gorm:"primaryKey" json:"user_id" binding:"required,max=11" example:"1"`
+}
+
 type UserToken struct {
-	Token string `json:"token"`
+	Token string `json:"token" uri:"token"`
 }
 
 // TableName for gorm

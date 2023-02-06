@@ -36,6 +36,7 @@ func JWTAuthMiddleware() func(ctx *gin.Context) {
 		}
 		// 將claims資訊傳遞至context中，方便獲取資訊
 		ctx.Set("jwtClaims", claims)
+		ctx.Set("jwtUserId", claims.UserId)
 
 		ctx.Next()
 	}
